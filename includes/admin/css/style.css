@@ -1,0 +1,36 @@
+.wc-gtm-plan-badge-0 {
+    display: inline-block;
+    background-color: rgb(241, 65, 108); /* you can change the color as needed */
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-left: 4px; /* slight space between "Plan:" and the badge */
+}
+.wc-gtm-plan-badge-1 {
+    display: inline-block;
+    background-color: #50cd89; /* you can change the color as needed */
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-left: 4px; /* slight space between "Plan:" and the badge */
+}
+.wc-gtm-plan-badge-2 {
+    display: inline-block;
+    background-color: #8BC9C9; /* you can change the color as needed */
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-left: 4px; /* slight space between "Plan:" and the badge */
+}
+.wc-gtm-plan-badge-3 {
+    display: inline-block;
+    background-color: #ffc700; /* you can change the color as needed */
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-left: 4px; /* slight space between "Plan:" and the badge */
+}
