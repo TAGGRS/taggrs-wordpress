@@ -1,0 +1,54 @@
+=== TAGGRS Server-Side Integration ===
+Contributors: TAGGRS
+Tags: woocommerce, google analytics, ga4, server-side tracking, e-commerce analytics, enhanced conversions, user data, taggrs, server side tracking, server side tagging, google ads, conversion api, capi
+Requires at least: WordPress 4.5
+Tested up to: WordPress 6.4.1
+Stable tag: 1.0.0
+Requires PHP: 7.2
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+Integrate Google Analytics 4 (GA4) with server-side capabilities into your WooCommerce store for enhanced e-commerce analytics and user behavior tracking.
+
+== Description ==
+
+This TAGGRS Server-Side Integration plugin seamlessly embeds Google Analytics 4 (GA4) data layer into your WooCommerce site, combining client-side and server-side tracking for a more comprehensive analysis of customer interactions. With this plugin, store owners gain deeper insights into their sales funnel and user behavior, enabling data-driven decision-making and improved store performance.
+
+Features:
+- Easy integration of GA4 with WooCommerce.
+- Dual tracking: Combines client-side and server-side data collection.
+- Enhanced data accuracy and reliability.
+- Better privacy compliance.
+- Enhanced Conversions.
+- In-depth insights into customer journey and sales metrics via GA4.
+
+== Installation ==
+
+1. Upload the plugin to the `/wp-content/plugins/` directory and unzip it, or install the plugin through the WordPress plugins screen directly.
+2. Activate the plugin through the 'Plugins' screen in WordPress.
+3. Use the TAGGRS screen in the menu bar to configure the plugin.
+4. Enter your GTM code to link your Google Tag Manager account.
+
+== Frequently Asked Questions ==
+
+= Do I need a Google Tag Manager account to use this plugin? =
+
+Yes, you need to have a GoogleTag Manager account and a GTM code to integrate the plugin with GA4.
+
+= Do I need a TAGGRS account to use this plugin? =
+
+No, its not required to have a TAGGRS account. We recommend it to get the most out of your tracking.
+
+= Is this plugin compliant with privacy regulations like GDPR? =
+
+The plugin adheres to privacy regulations by providing server-side tracking, which enhances data privacy and compliance.
+
+== Changelog ==
+
+= 1.0.0 =
+- Initial release.
+
+== Upgrade Notice ==
+
+= 1.0.0 =
+Initial release. Please backup your website before installing.
