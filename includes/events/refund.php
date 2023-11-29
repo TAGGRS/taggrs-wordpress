@@ -1,30 +1,46 @@
 <?php
-function wc_gtm_refund($order_id) {
+function wc_ga4_refund($order_id) {
     $options = get_option('wc_gtm_options');
-    $current_user = wp_get_current_user();
-    $hashed_email = '';
-    if ($current_user->exists()) {
-        $hashed_email = hash('sha256', $current_user->user_email);
+    $order = wc_get_order($order_id);
+    $items = [];
+
+    foreach ($order->get_items() as $item_id => $item) {
+        $product = $item->get_product();
+        $categories = get_the_terms($product->get_id(), 'product_cat');
+        $item_categories = array();
+        foreach ($categories as $category) {
+            $item_categories[] = $category->name;
+        }
+
+        // Voeg hier aanvullende productcategorieën toe indien nodig
+        // Voorbeeld: $item_category2 = 'Adult';
+
+        $items[] = [
+            'item_id' => $product->get_id(),
+            'item_name' => $product->get_name(),
+            'item_category' => $item_categories[0] ?? '',
+            'price' => $order->get_item_total($item),
+            'quantity' => $item->get_quantity()
+        ];
     }
-    if (isset($options['refund']) && $options['refund']) {
-        $order = wc_get_order($order_id);
-        ?>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            dataLayer.push({
-                'event': 'refund',
-                'email': '<?php echo $current_user->user_email ?>',
-                'email_hashed': '<?php echo $hashed_email ?>',
-                'order_id': '<?php echo $order_id ?>',
-                'value': '<?php echo $order->get_total() ?>',
-                'currency': '<?php echo $order->get_currency() ?>',
-                // Add additional variables here.
-            });
-        </script>
-        <?php
-    }
+
+    ?>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        dataLayer.push({
+            'event': 'refund',
+            'ecommerce': {
+                'currency': '<?php echo $order->get_currency(); ?>',
+                'transaction_id': '<?php echo $order_id; ?>',
+                'value': '<?php echo $order->get_total(); ?>',
+                'shipping': '<?php echo $order->get_shipping_total(); ?>',
+                'tax': '<?php echo $order->get_total_tax(); ?>',
+                'items': <?php echo json_encode($items); ?>
+            }
+        });
+    </script>
+    <?php
 }
 
-add_action('woocommerce_order_status_refunded', 'wc_gtm_refund');
-
+add_action('woocommerce_order_status_refunded', 'wc_ga4_refund');
 ?>

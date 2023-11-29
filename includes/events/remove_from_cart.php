@@ -5,8 +5,10 @@ function ga4_remove_from_cart_event( $cart_item_key, $instance ) {
     $cart_item = $instance->get_cart_item( $cart_item_key );
     $current_user = wp_get_current_user();
     $hashed_email = '';
+    $email = '';
     if ($current_user->exists()) {
         $hashed_email = hash('sha256', $current_user->user_email);
+        $email = $current_user->user_email;
     }
 
     if (!$cart_item || !isset($cart_item['product_id'])) {
@@ -20,14 +22,23 @@ function ga4_remove_from_cart_event( $cart_item_key, $instance ) {
     }
 
     $ga4_event_data = array(
-        'event'         => 'remove_from_cart',
-        'product_name'  => $product->get_name(),
-        'product_id'    => $product->get_id(),
-        'hashed_email'    => $hashed_email,
-        'email'    => $current_user->user_email,
-        'quantity'      => 1, // Usually it's 1 item removed at a time. Adjust if needed.
-        'price'         => $product->get_price(),
-        'currency'      => get_woocommerce_currency(),
+        'event'     => 'remove_from_cart',
+        'ecommerce' => array(
+            'currency' => get_woocommerce_currency(),
+            'value' => floatval($product->get_price()),
+            'items'    => array(array(
+                'item_id'    => $product->get_id(),
+                'item_name'  => $product->get_name(),
+                'item_category' => $product->get_category(),
+                'quantity'   => 1,
+                'price'      => floatval($product->get_price()),
+            )),
+            'user_data' => array(
+                'email_hashed' => $hashed_email,
+                'email' => $email
+            )
+        )
+        // Voeg hier eventuele extra event parameters toe
     );
 
     // Enqueue the data as an inline script
@@ -50,22 +61,7 @@ function ga4_print_remove_from_cart_script() {
         document.addEventListener("DOMContentLoaded", function() {
             if( window.ga4RemoveFromCartData ) {
                 window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({
-                    'event': 'remove_from_cart',
-                    'email': window.ga4RemoveFromCartData.email,
-                    'hashed_email': window.ga4RemoveFromCartData.hashed_email,
-                    'ecommerce': {
-                        'currencyCode': window.ga4RemoveFromCartData.currency,
-                        'remove': {
-                            'products': [{
-                                'name': window.ga4RemoveFromCartData.product_name,
-                                'id': window.ga4RemoveFromCartData.product_id.toString(),
-                                'price': window.ga4RemoveFromCartData.price.toString(),
-                                'quantity': window.ga4RemoveFromCartData.quantity
-                            }]
-                        }
-                    }
-                });
+                window.dataLayer.push(window.ga4RemoveFromCartData);
             }
         });
     </script>
@@ -77,7 +73,13 @@ add_action( 'wp_footer', 'ga4_print_remove_from_cart_script' );
 
 
 function ga4_ajax_remove_from_cart_script() {
-
+    $current_user = wp_get_current_user();
+    $hashed_email = '';
+    $email = '';
+    if ($current_user->exists()) {
+        $hashed_email = hash('sha256', $current_user->user_email);
+        $email = $current_user->user_email;
+    }
     $options = get_option('wc_gtm_options');
     if (isset($options['remove_from_cart']) && $options['remove_from_cart']) {
     ?>
@@ -91,36 +93,30 @@ function ga4_ajax_remove_from_cart_script() {
 
             // Extract the required data attributes
             var product_id = jQuery(this).data('product_id');
-            var product_name = jQuery(this).data('product_name'); // It seems empty in the given example but included just in case
-            var price = jQuery(this).data('price'); // It seems empty in the given example but included just in case
-            var quantity = jQuery(this).data('quantity'); // It seems empty in the given example but included just in case
-            var email = jQuery(this).data('email'); // It seems empty in the given example but included just in case
-            var hashed_email = jQuery(this).data('hashed_email'); // It seems empty in the given example but included just in case
-            // Add any other data points you want to capture here
-
-            // Your dataLayer push logic
+            jQuery.ajax({
+                url: '/wp-admin/admin-ajax.php', // WordPress AJAX handler
+                type: 'POST',
+                data: {
+                    action: 'get_product_details', // The WordPress action
+                    product_id: product_id
+                },
+                success: function(response) {
             window.dataLayer = window.dataLayer || [];
             window.dataLayer.push({
                 'event': 'remove_from_cart',
-                'email': email,
-                'hashed_email': hashed_email,
-                'ecommerce': {
-                    'remove': {
-                        'products': [{
-                            'name': product_name,
-                            'id': product_id,
-                            'price': price,
-                            'quantity': quantity
-                            // Add any other data points you want to capture here
-                        }]
-                    }
+                'ecommerce': response,
+                'user_data': {
+                    'email': '<?php echo $email; ?>',
+                    'hashed_email': '<?php echo $hashed_email; ?>',
                 }
             });
 
             // After a brief delay, continue with the default action (to give dataLayer time to push the event)
-            setTimeout(function() {
-                window.location.href = e.target.href;
-            }, 500);
+            // setTimeout(function() {
+            //     window.location.href = e.target.href;
+            // }, 500);
+                }
+            });
         });
 
     </script>
@@ -130,6 +126,29 @@ function ga4_ajax_remove_from_cart_script() {
 add_action( 'wp_footer', 'ga4_ajax_remove_from_cart_script' );
 
 
-
+function get_product_details_callback() {
+    $product_id = 15;
+    $product = wc_get_product($product_id);
+    $categories = wp_get_post_terms( $product_id, 'product_cat' );
+    $category_names = array();
+    foreach ($categories as $category) {
+        $category_names[] = $category->name;
+    }
+    $category_list = implode(', ', $category_names);
+    // Construct and return the product details
+    wp_send_json(array(
+        'currency' => get_woocommerce_currency(),
+        'value' => floatval($product->get_price()),
+        'items'    => array(array(
+            'item_id'    => $product->get_id(),
+            'item_name'  => $product->get_name(),
+            'item_category' => $category_list,
+            'quantity'   => 1,
+            'price'      => floatval($product->get_price()),
+        ))
+    ));
+}
+add_action('wp_ajax_get_product_details', 'get_product_details_callback');
+add_action('wp_ajax_nopriv_get_product_details', 'get_product_details_callback');
 
 ?>
