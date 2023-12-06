@@ -5,7 +5,7 @@ function inject_gtm_script() {
     $gtm_options = get_option('wc_gtm_options', array());
 
 // Check if the option isn't an array or if it doesn't contain the expected key.
-    if (!is_array($gtm_options) || !isset($gtm_options['wc_gtm_url_toggle'])) {
+    if (!is_array($gtm_options) || !isset($gtm_options['wc_gtm_url_toggle']) || $gtm_options['wc_gtm_url_toggle'] == '') {
         $gtm_url = 'googletagmanager.com'; // Default value
     } else {
         $gtm_url = $gtm_options['wc_gtm_url_toggle'];
@@ -38,7 +38,7 @@ add_action('wp_head', 'inject_gtm_script');
 function inject_gtm_noscript() {
     $gtm_code = get_option('wc_gtm_code', '');
     $gtm_options = get_option('wc_gtm_options', array());
-    if (!is_array($gtm_options) || !isset($gtm_options['wc_gtm_url_toggle'])) {
+    if (!is_array($gtm_options) || !isset($gtm_options['wc_gtm_url_toggle']) || $gtm_options['wc_gtm_url_toggle'] == '') {
         $gtm_url = 'googletagmanager.com'; // Default value
     } else {
         $gtm_url = $gtm_options['wc_gtm_url_toggle'];

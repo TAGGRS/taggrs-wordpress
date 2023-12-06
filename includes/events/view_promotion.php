@@ -16,12 +16,25 @@ function wc_ga4_view_promotion() {
         foreach ( $promotions as $promotion ) {
             $coupon = new WC_Coupon($promotion['coupon_code']);
 
+            $promotion_id = '';
+            $promotion_code = '';
+            $promotion_amount = '';
+
+            if ($coupon !== null && method_exists($coupon, 'get_id')) {
+                $promotion_id = $coupon->get_id();
+            }
+            if ($coupon !== null && method_exists($coupon, 'get_code')) {
+                $promotion_code = $coupon->get_code();
+            }
+            if ($coupon !== null && method_exists($coupon, 'get_amount')) {
+                $promotion_amount = $coupon->get_amount();
+            }
             // Voeg logica toe om andere relevante informatie over de promotie te verzamelen indien nodig
             $promotion_data = [
-                'item_id' => $coupon->get_id(),
-                'item_name' => $coupon->get_code(),
-                'coupon' => $coupon->get_code(),
-                'discount' => $coupon->get_amount(),
+                'item_id' => $promotion_id,
+                'item_name' => $promotion_code,
+                'coupon' => $promotion_code,
+                'discount' => $promotion_amount,
             ];
 
             $promotion_items[] = $promotion_data;
@@ -33,8 +46,8 @@ function wc_ga4_view_promotion() {
             dataLayer.push({
                 'event': 'view_promotion',
                 'ecommerce': {
-                    'promotion_id': '<?php echo$coupon->get_id(); ?>, // Of een andere unieke identifier voor de promotie
-                    'promotion_name': '<?php echo$coupon->get_code(); ?>, // De
+                    'promotion_id': '<?php echo$promotion_id; ?>,
+                    'promotion_name': '<?php echo$promotion_code; ?>,
                     'items': <?php echo json_encode($promotion_items); ?>
                 },
                 'user_data': {
