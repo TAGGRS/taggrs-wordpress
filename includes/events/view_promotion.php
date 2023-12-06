@@ -46,8 +46,8 @@ function wc_ga4_view_promotion() {
             dataLayer.push({
                 'event': 'view_promotion',
                 'ecommerce': {
-                    'promotion_id': '<?php echo$promotion_id; ?>,
-                    'promotion_name': '<?php echo$promotion_code; ?>,
+                    'promotion_id': '<?php echo$promotion_id; ?>',
+                    'promotion_name': '<?php echo$promotion_code; ?>',
                     'items': <?php echo json_encode($promotion_items); ?>
                 },
                 'user_data': {
