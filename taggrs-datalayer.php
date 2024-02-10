@@ -3,7 +3,9 @@
 Plugin Name: TAGGRS - Server Side Tracking
 Description: This integration introduces a Google Analytics 4 (GA4) data layer with server-side tracking capabilities into WooCommerce. It enhances customer interaction tracking by combining traditional client-side events with server-side data collection. This approach offers more reliable analytics, improved privacy compliance, and a comprehensive understanding of user behavior and e-commerce performance in your WooCommerce store.
 Version: 1.1.3
-Author: TAGGRS BV
+Author: TAGGRS BV 
+License: GPL v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
