@@ -114,8 +114,8 @@ function wc_gtm_options_page_html() {
     <div class="wrap">
         <img src="<?php plugin_dir_path() ?>/includes/admin/images/taggrs-logo-blauw.png" style="width: 250px; height: auto; margin-top: 25px; margin-bottom: 25px;"></img>
         <h2 class="nav-tab-wrapper">
-            <a href="?page=wc-gtm-settings&tab=gtm" class="nav-tab <?= $active_tab == 'gtm' ? 'nav-tab-active' : ''; ?>">GTM Settings</a>
-            <a href="?page=wc-gtm-settings&tab=events" class="nav-tab <?= $active_tab == 'events' ? 'nav-tab-active' : ''; ?>">Events</a>
+            <a href="?page=wc-gtm-settings&tab=gtm" class="nav-tab <?php $active_tab == 'gtm' ? 'nav-tab-active' : ''; ?>">GTM Settings</a>
+            <a href="?page=wc-gtm-settings&tab=events" class="nav-tab <?php $active_tab == 'events' ? 'nav-tab-active' : ''; ?>">Events</a>
         </h2>
 
         <div style="display: flex; justify-content: space-between;">
@@ -129,10 +129,10 @@ function wc_gtm_options_page_html() {
 
                             // Display both settings, but use a PHP condition to hide the non-active section
                             ?>
-                            <div <?= $active_tab == 'gtm' ? '' : 'style="display:none"'; ?>>
+                            <div <?php $active_tab == 'gtm' ? '' : 'style="display:none"'; ?>>
                                 <?php do_settings_sections('wc-gtm-settings'); ?>
                             </div>
-                            <div <?= $active_tab == 'events' ? '' : 'style="display:none"'; ?>>
+                            <div <?php $active_tab == 'events' ? '' : 'style="display:none"'; ?>>
                                 <?php do_settings_sections('wc-gtm-settings-events'); ?>
                             </div>
                             <?php
