@@ -2,7 +2,7 @@
 Contributors: TAGGRS
 Tags: woocommerce, google analytics, ga4, server-side tracking, e-commerce analytics, enhanced conversions, user data, taggrs, server side tracking, server side tagging, google ads, conversion api, capi
 Requires at least: WordPress 4.5
-Tested up to: WordPress 6.4.1
+Tested up to: WordPress 6.4
 Stable tag: 1.0.0
 Requires PHP: 7.2
 License: GPLv2 or later
