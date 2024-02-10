@@ -112,7 +112,7 @@ function wc_gtm_options_page_html() {
         }
     </style>
     <div class="wrap">
-        <img src="https://i.ibb.co/ckh2NK5/Taggrs-logo-blauw.png" style="width: 250px; height: auto; margin-top: 25px; margin-bottom: 25px;"></img>
+        <img src="<?php plugin_dir_path() ?>/includes/admin/images/taggrs-logo-blauw.png" style="width: 250px; height: auto; margin-top: 25px; margin-bottom: 25px;"></img>
         <h2 class="nav-tab-wrapper">
             <a href="?page=wc-gtm-settings&tab=gtm" class="nav-tab <?= $active_tab == 'gtm' ? 'nav-tab-active' : ''; ?>">GTM Settings</a>
             <a href="?page=wc-gtm-settings&tab=events" class="nav-tab <?= $active_tab == 'events' ? 'nav-tab-active' : ''; ?>">Events</a>
