@@ -56,7 +56,15 @@ function wc_gtm_options_page_html() {
         $percentage = ($requests / $request_limit) * 100;
     }
 
-    $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'gtm';
+    // Select tab, can be: gtm, events
+    $active_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'gtm';
+    switch($active_tab):
+        case 'gtm':
+        case 'events':
+            break;
+        default:
+            $active_tab = 'gtm';
+        endswitch;
 
     ?>
     <style>
