@@ -43,23 +43,6 @@ No, its not required to have a TAGGRS account. We recommend it to get the most o
 
 The plugin adheres to privacy regulations by providing server-side tracking, which enhances data privacy and compliance.
 
-== Third-Party Service Dependencies ==
-This TAGGRS Server-Side Integration plugin integrates with Google Tag Manager (GTM) for server-side tracking. This integration allows us to send data directly to GTM servers without requiring client-side scripting. This approach enhances data accuracy and privacy compliance.
-
-= Why We Use Google Tag Manager =
-We leverage Google Tag Manager due to its robust infrastructure and flexibility in handling server-side tracking. This enables our users to implement custom tracking solutions that meet their unique business needs while ensuring data is managed securely and efficiently.
-
-= Data Transmission Disclosure =
-Please be aware that by using this TAGGRS Server-Side Integration plugin, data will be transmitted to Google's servers as part of the tracking process. This may include, but is not limited to, user interactions, IP addresses, and other data you configure to track via GTM.
-
-= Third-Party Links =
-- **Google Tag Manager Service**: [Google Tag Manager](https://tagmanager.google.com/)
-- **Terms of Use**: [Google Terms of Service](https://policies.google.com/terms)
-- **Privacy Policy**: [Google Privacy Policy](https://policies.google.com/privacy)
-
-= Legal Compliance =
-We advise all users to review Google Tag Manager's Terms of Service and Privacy Policy to ensure compliance with data protection and privacy laws applicable to your use case. It is your responsibility to adhere to any legal requirements pertaining to data collection and processing activities conducted through GTM.
-
 == Changelog ==
 
 = 1.0.1 =

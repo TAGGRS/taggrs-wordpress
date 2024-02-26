@@ -17,6 +17,8 @@ function ga4_enqueue_jquery() {
 }
 add_action('wp_enqueue_scripts', 'ga4_enqueue_jquery');
 
+// Constant plugin path
+define('PLUGIN_PATH', plugin_dir_url( __FILE__ ));
 
 // Widgets
 require_once plugin_dir_path(__FILE__) . 'includes/widgets/taggrs_container_stats.php';
