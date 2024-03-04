@@ -21,13 +21,13 @@ function wc_gtm_dashboard_widget_content() {
     ?>
     <div class="postbox">
         <div class="inside">
-            <p><strong>Containername:</strong> <?php echo $container_name; ?></p>
-            <p><strong>Tagging URL:</strong> <?php echo $tagging_url; ?></p>
-            <p><strong>Plan:</strong> <span class="wc-gtm-plan-badge-<?php echo $plan_number; ?>"><?php echo $plan; ?></span></p>
+            <p><strong>Containername:</strong> <?php echo esc_js($container_name); ?></p>
+            <p><strong>Tagging URL:</strong> <?php echo esc_html($tagging_url); ?></p>
+            <p><strong>Plan:</strong> <span class="wc-gtm-plan-badge-<?php echo esc_js($plan_number); ?>"><?php echo esc_js($plan); ?></span></p>
             <p><strong>Request Limit:</strong></p>
             <div style="background-color: #f5f5f5; border: 1px solid #ccc; height: 20px; width: 100%; position: relative;">
-                <div style="width: <?php echo $percentage; ?>%; background-color: #0073aa; height: 100%;"></div>
-                <span style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); color: #555;"><?php echo $requests; ?> / <?php echo $request_limit; ?></span>
+                <div style="width: <?php echo esc_js($percentage); ?>%; background-color: #0073aa; height: 100%;"></div>
+                <span style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); color: #555;"><?php echo esc_js($requests); ?> / <?php echo esc_js($request_limit); ?></span>
             </div>
         </div>
     </div>

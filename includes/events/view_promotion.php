@@ -1,5 +1,6 @@
 <?php
-function wc_ga4_view_promotion() {
+function wc_ga4_view_promotion()
+{
     $options = get_option('wc_gtm_options');
     $current_user = wp_get_current_user();
     $hashed_email = '';
@@ -13,7 +14,7 @@ function wc_ga4_view_promotion() {
         // Veronderstelt dat er een manier is om de getoonde promoties op te halen
         $promotions = []; // Hier moet een logica komen om promoties op te halen
 
-        foreach ( $promotions as $promotion ) {
+        foreach ($promotions as $promotion) {
             $coupon = new WC_Coupon($promotion['coupon_code']);
 
             $promotion_id = '';
@@ -40,23 +41,24 @@ function wc_ga4_view_promotion() {
             $promotion_items[] = $promotion_data;
         }
 
-        ?>
+?>
         <script>
             window.dataLayer = window.dataLayer || [];
             dataLayer.push({
                 'event': 'view_promotion',
                 'ecommerce': {
-                    'promotion_id': '<?php echo$promotion_id; ?>',
-                    'promotion_name': '<?php echo$promotion_code; ?>',
-                    'items': <?php echo json_encode($promotion_items); ?>
+                    'promotion_id': '<?php echo esc_js($promotion_id); ?>',
+                    'promotion_name': '<?php echo esc_js($promotion_code); ?>',
+                    'items': <?php echo wp_json_encode($promotion_items); ?>
                 },
                 'user_data': {
-                    'email_hashed': '<?php echo $hashed_email ?>',
-                    'email': '<?php echo $email ?>'
+                    'email_hashed': '<?php echo esc_js($hashed_email); ?>',
+                    'email': '<?php echo esc_js($email); ?>'
                 }
             });
         </script>
-        <?php
+
+<?php
     }
 }
 
