@@ -68,6 +68,7 @@ We advise all users to review Google Tag Manager's Terms of Service and Privacy 
 - Updated required version
 - Replaced short php codes to full php codes.
 - Documented use of Google Tag Manager
+- Properly escaped all echos
 
 = 1.0.0 =
 - Initial release.
