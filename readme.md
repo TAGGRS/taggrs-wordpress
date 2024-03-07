@@ -69,6 +69,8 @@ We advise all users to review Google Tag Manager's Terms of Service and Privacy 
 - Replaced short php codes to full php codes.
 - Documented use of Google Tag Manager
 - Properly escaped all echos
+- Added prefix to all functions "tggr"
+- Made all files non-directly accessible
 
 = 1.0.0 =
 - Initial release.
