@@ -1,5 +1,7 @@
 <?php
-function wc_ga4_select_item()
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_select_item()
 {
     $options = get_option('wc_gtm_options');
     global $product, $wp_query;
@@ -57,5 +59,5 @@ function wc_ga4_select_item()
 <?php
     }
 }
-add_action('woocommerce_before_single_product', 'wc_ga4_select_item');
+add_action('woocommerce_before_single_product', 'tggr_select_item');
 ?>

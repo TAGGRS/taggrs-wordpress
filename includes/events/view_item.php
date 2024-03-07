@@ -1,17 +1,14 @@
 <?php
-function hash_email($email)
-{
-    return hash('sha256', strtolower(trim($email)));
-}
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-function wc_gtm_view_item()
+function tggr_gtm_view_item()
 {
 
     $options = get_option('wc_gtm_options');
     $current_user = wp_get_current_user();
     $hashed_email = '';
     if ($current_user->exists()) {
-        $hashed_email = hash_email($current_user->user_email);
+        $hashed_email = tggr_hash_email($current_user->user_email);
     }
     if (isset($options['view_item']) && $options['view_item']) {
         if (is_product()) {
@@ -48,6 +45,6 @@ function wc_gtm_view_item()
         }
     }
 }
-add_action('wp_footer', 'wc_gtm_view_item');
+add_action('wp_footer', 'tggr_gtm_view_item');
 
 ?>

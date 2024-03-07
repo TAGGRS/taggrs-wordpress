@@ -1,5 +1,7 @@
 <?php
-function wc_ga4_refund($order_id)
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_refund($order_id)
 {
     $options = get_option('wc_gtm_options');
     $order = wc_get_order($order_id);
@@ -43,5 +45,5 @@ function wc_ga4_refund($order_id)
 <?php
 }
 
-add_action('woocommerce_order_status_refunded', 'wc_ga4_refund');
+add_action('woocommerce_order_status_refunded', 'tggr_refund');
 ?>

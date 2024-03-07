@@ -1,14 +1,14 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-
-function ga4_add_to_cart_event($cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data)
+function tggr_add_to_cart_event($cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data)
 {
     $product = wc_get_product($product_id);
     $current_user = wp_get_current_user();
     $hashed_email = '';
     $email = '';
     if ($current_user->exists()) {
-        $hashed_email = hash_email($current_user->user_email);
+        $hashed_email = tggr_hash_email($current_user->user_email);
         $email = $current_user->user_email;
     }
     $categories = wp_get_post_terms($product_id, 'product_cat');
@@ -17,7 +17,7 @@ function ga4_add_to_cart_event($cart_item_key, $product_id, $quantity, $variatio
         $category_names[] = $category->name;
     }
     $category_list = implode(', ', $category_names);
-    $ga4_event_data = array(
+    $tggr_event_data = array(
         'event'     => 'add_to_cart',
         'ecommerce' => array(
             'currency' => get_woocommerce_currency(),
@@ -39,13 +39,13 @@ function ga4_add_to_cart_event($cart_item_key, $product_id, $quantity, $variatio
 
     wp_register_script('ga4-add-to-cart', false);
     wp_enqueue_script('ga4-add-to-cart');
-    wp_add_inline_script('ga4-add-to-cart', 'window.ga4AddToCartData = ' . wp_json_encode($ga4_event_data) . ';', 'before');
+    wp_add_inline_script('ga4-add-to-cart', 'window.ga4AddToCartData = ' . wp_json_encode($tggr_event_data) . ';', 'before');
 }
-add_action('woocommerce_add_to_cart', 'ga4_add_to_cart_event', 10, 6);
+add_action('woocommerce_add_to_cart', 'tggr_add_to_cart_event', 10, 6);
 
 
 
-function ga4_ajax_add_to_cart_script()
+function tggr_ajax_add_to_cart_script()
 {
 
     $options = get_option('wc_gtm_options');
@@ -91,11 +91,11 @@ function ga4_ajax_add_to_cart_script()
     <?php
     }
 }
-add_action('wp_footer', 'ga4_ajax_add_to_cart_script');
+add_action('wp_footer', 'tggr_ajax_add_to_cart_script');
 
 
 
-function ga4_print_add_to_cart_script()
+function tggr_print_add_to_cart_script()
 {
     if (!wp_script_is('ga4-add-to-cart', 'enqueued')) {
         return;
@@ -115,7 +115,7 @@ function ga4_print_add_to_cart_script()
 <?php
     }
 }
-add_action('wp_footer', 'ga4_print_add_to_cart_script');
+add_action('wp_footer', 'tggr_print_add_to_cart_script');
 
 
 

@@ -1,5 +1,7 @@
 <?php
-function wc_ga4_select_promotion($coupon_code)
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_select_promotion($coupon_code)
 {
     $options = get_option('wc_gtm_options');
     $coupon = new WC_Coupon($coupon_code);
@@ -59,5 +61,5 @@ function wc_ga4_select_promotion($coupon_code)
     }
 }
 
-add_action('woocommerce_applied_coupon', 'wc_ga4_select_promotion');
+add_action('woocommerce_applied_coupon', 'tggr_select_promotion');
 ?>

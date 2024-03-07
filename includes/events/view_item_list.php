@@ -1,5 +1,7 @@
 <?php
-function wc_gtm_view_item_list()
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_gtm_view_item_list()
 {
     $options = get_option('wc_gtm_options');
     $current_user = wp_get_current_user();
@@ -58,6 +60,6 @@ function wc_gtm_view_item_list()
         }
     }
 }
-add_action('wp_footer', 'wc_gtm_view_item_list');
+add_action('wp_footer', 'tggr_gtm_view_item_list');
 
 ?>

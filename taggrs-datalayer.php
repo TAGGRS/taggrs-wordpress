@@ -12,10 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-function ga4_enqueue_jquery() {
+function tggr_enqueue_jquery() {
     wp_enqueue_script('jquery');
 }
-add_action('wp_enqueue_scripts', 'ga4_enqueue_jquery');
+add_action('wp_enqueue_scripts', 'tggr_enqueue_jquery');
 
 // Constant plugin path
 define('PLUGIN_PATH', plugin_dir_url( __FILE__ ));
@@ -28,6 +28,9 @@ require_once plugin_dir_path(__FILE__) . 'includes/admin/init.php';
 
 // inject gtm codes
 require_once plugin_dir_path(__FILE__) . 'includes/inject_gtm.php';
+
+// load functions
+require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
 
 // load events
 require_once plugin_dir_path(__FILE__) . 'includes/events/view_item.php';

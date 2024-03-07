@@ -1,5 +1,7 @@
 <?php
-function wc_ga4_view_promotion()
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_view_promotion()
 {
     $options = get_option('wc_gtm_options');
     $current_user = wp_get_current_user();
@@ -62,5 +64,5 @@ function wc_ga4_view_promotion()
     }
 }
 
-add_action('wp_footer', 'wc_ga4_view_promotion');
+add_action('wp_footer', 'tggr_view_promotion');
 ?>

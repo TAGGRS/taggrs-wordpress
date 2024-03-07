@@ -1,6 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-function wc_gtm_purchase($order_id)
+function tggr_gtm_purchase($order_id)
 {
     $options = get_option('wc_gtm_options');
 
@@ -20,8 +21,8 @@ function wc_gtm_purchase($order_id)
             ];
         }
 
-        $hashed_email = hash_email($order->get_billing_email());
-        $hashed_phone = hash_email($order->get_billing_phone());
+        $hashed_email = tggr_hash_email($order->get_billing_email());
+        $hashed_phone = tggr_hash_email($order->get_billing_phone());
 ?>
         <script>
             window.dataLayer = window.dataLayer || [];
@@ -55,5 +56,5 @@ function wc_gtm_purchase($order_id)
 <?php
     }
 }
-add_action('woocommerce_thankyou', 'wc_gtm_purchase');
+add_action('woocommerce_thankyou', 'tggr_gtm_purchase');
 ?>

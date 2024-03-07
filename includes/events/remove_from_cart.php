@@ -1,7 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-
-function ga4_remove_from_cart_event($cart_item_key, $instance)
+function tggr_remove_from_cart_event($cart_item_key, $instance)
 {
     $cart_item = $instance->get_cart_item($cart_item_key);
     $current_user = wp_get_current_user();
@@ -22,7 +22,7 @@ function ga4_remove_from_cart_event($cart_item_key, $instance)
         return;
     }
 
-    $ga4_event_data = array(
+    $tggr_event_data = array(
         'event'     => 'remove_from_cart',
         'ecommerce' => array(
             'currency' => get_woocommerce_currency(),
@@ -45,12 +45,12 @@ function ga4_remove_from_cart_event($cart_item_key, $instance)
     // Enqueue the data as an inline script
     wp_register_script('ga4-remove-from-cart', false);
     wp_enqueue_script('ga4-remove-from-cart');
-    wp_add_inline_script('ga4-remove-from-cart', 'window.ga4RemoveFromCartData = ' . wp_json_encode($ga4_event_data) . ';', 'before');
+    wp_add_inline_script('ga4-remove-from-cart', 'window.ga4RemoveFromCartData = ' . wp_json_encode($tggr_event_data) . ';', 'before');
 }
-add_action('woocommerce_cart_item_removed', 'ga4_remove_from_cart_event', 10, 2);
+add_action('woocommerce_cart_item_removed', 'tggr_remove_from_cart_event', 10, 2);
 
 
-function ga4_print_remove_from_cart_script()
+function tggr_print_remove_from_cart_script()
 {
     if (!wp_script_is('ga4-remove-from-cart', 'enqueued')) {
         return;
@@ -70,11 +70,11 @@ function ga4_print_remove_from_cart_script()
     <?php
     }
 }
-add_action('wp_footer', 'ga4_print_remove_from_cart_script');
+add_action('wp_footer', 'tggr_print_remove_from_cart_script');
 
 
 
-function ga4_ajax_remove_from_cart_script()
+function tggr_ajax_remove_from_cart_script()
 {
     $current_user = wp_get_current_user();
     $hashed_email = '';
@@ -126,10 +126,10 @@ function ga4_ajax_remove_from_cart_script()
 <?php
     }
 }
-add_action('wp_footer', 'ga4_ajax_remove_from_cart_script');
+add_action('wp_footer', 'tggr_ajax_remove_from_cart_script');
 
 
-function get_product_details_callback()
+function tggr_get_product_details_callback()
 {
     $product_id = 15;
     $product = wc_get_product($product_id);
@@ -152,7 +152,7 @@ function get_product_details_callback()
         ))
     ));
 }
-add_action('wp_ajax_get_product_details', 'get_product_details_callback');
-add_action('wp_ajax_nopriv_get_product_details', 'get_product_details_callback');
+add_action('wp_ajax_get_product_details', 'tggr_get_product_details_callback');
+add_action('wp_ajax_nopriv_get_product_details', 'tggr_get_product_details_callback');
 
 ?>

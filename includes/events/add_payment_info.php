@@ -1,5 +1,7 @@
 <?php
-function wc_ga4_add_payment_info()
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_add_payment_info()
 {
     $options = get_option('wc_gtm_options');
 
@@ -59,5 +61,5 @@ function wc_ga4_add_payment_info()
     }
 }
 
-add_action('woocommerce_after_checkout_billing_form', 'wc_ga4_add_payment_info');
+add_action('woocommerce_after_checkout_billing_form', 'tggr_add_payment_info');
 ?>

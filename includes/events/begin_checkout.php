@@ -1,5 +1,7 @@
 <?php
-function wc_ga4_begin_checkout()
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_begin_checkout()
 {
     $options = get_option('wc_gtm_options');
     $current_user = wp_get_current_user();
@@ -27,7 +29,7 @@ function wc_ga4_begin_checkout()
         }
 
         // Totaalwaarde van de winkelwagen
-        $cart_total = $cart->get_total();
+        $cart_total = $cart->cart_contents_total;
 
         // Voeg hier de logica toe om de gebruikte couponcode op te halen, indien aanwezig
         $applied_coupons = $cart->get_applied_coupons();
@@ -55,5 +57,5 @@ function wc_ga4_begin_checkout()
     }
 }
 
-add_action('woocommerce_before_checkout_form', 'wc_ga4_begin_checkout');
+add_action('woocommerce_before_checkout_form', 'tggr_begin_checkout');
 ?>

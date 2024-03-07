@@ -1,5 +1,7 @@
 <?php
-function wc_ga4_add_to_wishlist()
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_add_to_wishlist()
 {
     $options = get_option('wc_gtm_options');
 
@@ -48,5 +50,5 @@ function wc_ga4_add_to_wishlist()
 }
 
 // Pas de hook aan op basis van je verlanglijst functionaliteit.
-add_action('your_wishlist_add_action', 'wc_ga4_add_to_wishlist');
+add_action('your_wishlist_add_action', 'tggr_add_to_wishlist');
 ?>

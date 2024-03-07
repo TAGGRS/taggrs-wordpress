@@ -1,6 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 // Function to output the content of the widget
-function wc_gtm_dashboard_widget_content() {
+function tggr_dashboard_widget_content() {
     // Fetch the container data
     $id = 'd6c41dc2-69f5-49d4-a510-cbe5cadad499';
     $bearer_token = '1|hUgtpWxPz17M0WC023NlLZhmM5EMGnaTKFsw70nr';
@@ -35,12 +37,12 @@ function wc_gtm_dashboard_widget_content() {
 }
 
 // Function to add the widget to the dashboard
-function wc_gtm_add_dashboard_widgets() {
+function tggr_add_dashboard_widgets() {
     wp_add_dashboard_widget(
-        'wc_gtm_dashboard_widget',               // Widget slug
+        'tggr_dashboard_widget',               // Widget slug
         'TAGGRS Container Details',              // Title
-        'wc_gtm_dashboard_widget_content'        // Display function
+        'tggr_dashboard_widget_content'        // Display function
     );
 }
-add_action('wp_dashboard_setup', 'wc_gtm_add_dashboard_widgets');
+add_action('wp_dashboard_setup', 'tggr_add_dashboard_widgets');
 ?>

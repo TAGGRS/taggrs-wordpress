@@ -1,6 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-function wc_gtm_view_cart()
+function tggr_gtm_view_cart()
 {
     $options = get_option('wc_gtm_options');
 
@@ -54,7 +55,7 @@ function wc_gtm_view_cart()
         }
     }
 }
-add_action('wp_footer', 'wc_gtm_view_cart');
+add_action('wp_footer', 'tggr_gtm_view_cart');
 
 
 
