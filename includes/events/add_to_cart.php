@@ -39,7 +39,7 @@ function ga4_add_to_cart_event($cart_item_key, $product_id, $quantity, $variatio
 
     wp_register_script('ga4-add-to-cart', false);
     wp_enqueue_script('ga4-add-to-cart');
-    wp_add_inline_script('ga4-add-to-cart', 'window.ga4AddToCartData = ' . json_encode($ga4_event_data) . ';', 'before');
+    wp_add_inline_script('ga4-add-to-cart', 'window.ga4AddToCartData = ' . wp_json_encode($ga4_event_data) . ';', 'before');
 }
 add_action('woocommerce_add_to_cart', 'ga4_add_to_cart_event', 10, 6);
 

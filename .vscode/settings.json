@@ -73,5 +73,9 @@
         "zip",
         "zlib",
         "wordpress"
+    ],
+    "intelephense.environment.includePaths": [
+        "..\\..\\..\\wp-includes",
+        "C:\\Users\\Bruce kristelijn\\Documents\\- Web projects\\wordpress-woocommerce\\wp-content\\plugins\\woocommerce\\includes"
     ]
 }

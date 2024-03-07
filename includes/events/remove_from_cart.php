@@ -45,7 +45,7 @@ function ga4_remove_from_cart_event($cart_item_key, $instance)
     // Enqueue the data as an inline script
     wp_register_script('ga4-remove-from-cart', false);
     wp_enqueue_script('ga4-remove-from-cart');
-    wp_add_inline_script('ga4-remove-from-cart', 'window.ga4RemoveFromCartData = ' . json_encode($ga4_event_data) . ';', 'before');
+    wp_add_inline_script('ga4-remove-from-cart', 'window.ga4RemoveFromCartData = ' . wp_json_encode($ga4_event_data) . ';', 'before');
 }
 add_action('woocommerce_cart_item_removed', 'ga4_remove_from_cart_event', 10, 2);
 

@@ -14,13 +14,13 @@ function wc_gtm_options_page() {
 add_action('admin_menu', 'wc_gtm_options_page');
 
 function wc_gtm_admin_styles() {
-    echo esc_html( "
+    echo "
     <style>
         #adminmenu .toplevel_page_wc-gtm-settings img {
             padding-top: 6px;  /* Adjust as needed */
         }
     </style>
-    ");
+    ";
 }
 add_action('admin_head', 'wc_gtm_admin_styles');
 
@@ -298,32 +298,32 @@ function wc_gtm_section_gtm_cb($args) {
 
 function wc_gtm_code_cb($args) {
     $gtm_code = get_option('wc_gtm_code');
-    echo esc_html( '<input name="wc_gtm_code" id="wc_gtm_code" type="text" value="' . esc_attr($gtm_code) . '" class="regular-text">' );
-    echo esc_html( '<p class="description">You can fill in your Google Tag Manager web container ID</p>' );
+    echo '<input name="wc_gtm_code" id="wc_gtm_code" type="text" value="' . esc_attr($gtm_code) . '" class="regular-text">';
+    echo '<p class="description">You can fill in your Google Tag Manager web container ID</p>';
 }
 
 function wc_gtm_url_cb($args) {
     $gtm_url = get_option('wc_gtm_url');
-    echo esc_html( '<input name="wc_gtm_url" id="wc_gtm_url" type="text" value="' . esc_attr($gtm_url) . '" class="regular-text">' );
+    echo ( '<input name="wc_gtm_url" id="wc_gtm_url" type="text" value="' . esc_attr($gtm_url) . '" class="regular-text">' );
 }
 
 function wc_gtm_section_callback($args) {
-    echo esc_html( '<p class="description"><i>You have the option to select the events of your choice, and all events include the transmission of enhanced conversions.</i></p>' );
-    echo esc_html( '<p class="description">Enable or disable the following events:</p>' );
+    echo ( '<p class="description"><i>You have the option to select the events of your choice, and all events include the transmission of enhanced conversions.</i></p>' );
+    echo ( '<p class="description">Enable or disable the following events:</p>' );
 }
 
 function wc_gtm_field_callback($args) {
     $options = get_option('wc_gtm_options');
     $checked = isset($options[$args['event_name']]) ? checked($options[$args['event_name']], 1, false) : '';
-    echo esc_html("<input name='wc_gtm_options[{$args['event_name']}]' type='checkbox' id='{$args['label_for']}' value='1'  {$checked}>");
+    echo ("<input name='wc_gtm_options[{$args['event_name']}]' type='checkbox' id='{$args['label_for']}' value='1'  {$checked}>");
 }
 
 function wc_gtm_url_toggle_cb() {
     $options = get_option('wc_gtm_options', array());
     $value = isset($options['wc_gtm_url_toggle']) ? $options['wc_gtm_url_toggle'] : '';
-    echo esc_html( '<input type="text" id="wc_gtm_url_toggle" name="wc_gtm_options[wc_gtm_url_toggle]" style="width:350px; " value="' . esc_attr($value) . '" />' );
-    echo esc_html( '<p class="description">Read <a href="https://taggrs.io/en/enhanced-tracking-script/">this article</a> to find out how to use the Enhanced Tracking Script</p>' );
-    echo esc_html( '<p class="description"><i>If you do not want to use the Enhanced Tracking Script, leave this field empty</i></p>' );
+    echo ( '<input type="text" id="wc_gtm_url_toggle" name="wc_gtm_options[wc_gtm_url_toggle]" style="width:350px; " value="' . esc_attr($value) . '" />' );
+    echo ( '<p class="description">Read <a href="https://taggrs.io/en/enhanced-tracking-script/">this article</a> to find out how to use the Enhanced Tracking Script</p>' );
+    echo ( '<p class="description"><i>If you do not want to use the Enhanced Tracking Script, leave this field empty</i></p>' );
 
 }
 
