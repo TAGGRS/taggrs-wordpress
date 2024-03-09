@@ -1,5 +1,8 @@
 <?php
-function wc_ga4_add_shipping_info() {
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_add_shipping_info()
+{
     $options = get_option('wc_gtm_options');
     $current_user = wp_get_current_user();
     $hashed_email = '';
@@ -31,26 +34,27 @@ function wc_ga4_add_shipping_info() {
     }
 
     if (isset($options['add_shipping_info']) && $options['add_shipping_info']) {
-        ?>
+?>
         <script>
             window.dataLayer = window.dataLayer || [];
             dataLayer.push({
                 'event': 'add_shipping_info',
                 'ecommerce': {
-                    'currency': '<?php echo get_woocommerce_currency(); ?>',
-                    'value': <?php echo $total_value; ?>, // Totale waarde van de winkelwagen
-                    'items': <?php echo json_encode($items); ?>,
-                        'user_data': {
-                'email': '<?php echo $current_user->user_email ?>',
-                    'email_hashed': '<?php echo $hashed_email ?>'
-            }
+                    'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>',
+                    'value': <?php echo esc_js($total_value); ?>, // Totale waarde van de winkelwagen
+                    'items': <?php echo wp_json_encode($items); ?>,
+                    'user_data': {
+                        'email': '<?php echo esc_js($current_user->user_email); ?>',
+                        'email_hashed': '<?php echo esc_js($hashed_email); ?>'
+                    }
                 }
                 // Voeg hier eventueel extra GA4-specifieke variabelen toe.
             });
         </script>
-        <?php
+
+<?php
     }
 }
 
-add_action('woocommerce_after_checkout_shipping_form', 'wc_ga4_add_shipping_info');
+add_action('woocommerce_after_checkout_shipping_form', 'tggr_add_shipping_info');
 ?>

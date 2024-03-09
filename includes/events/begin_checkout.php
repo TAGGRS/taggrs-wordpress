@@ -1,5 +1,8 @@
 <?php
-function wc_ga4_begin_checkout() {
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_begin_checkout()
+{
     $options = get_option('wc_gtm_options');
     $current_user = wp_get_current_user();
     $hashed_email = '';
@@ -26,32 +29,33 @@ function wc_ga4_begin_checkout() {
         }
 
         // Totaalwaarde van de winkelwagen
-        $cart_total = $cart->get_total();
+        $cart_total = $cart->cart_contents_total;
 
         // Voeg hier de logica toe om de gebruikte couponcode op te halen, indien aanwezig
         $applied_coupons = $cart->get_applied_coupons();
         $coupon_code = !empty($applied_coupons) ? $applied_coupons[0] : '';
 
-        ?>
+?>
         <script>
             window.dataLayer = window.dataLayer || [];
             dataLayer.push({
                 'event': 'begin_checkout',
                 'ecommerce': {
-                    'currency': '<?php echo get_woocommerce_currency(); ?>', // Voeg de valuta toe
-                    'value': <?php echo $cart_total; ?>, // Totaalwaarde van de winkelwagen
-                    'coupon': '<?php echo $coupon_code; ?>', // Gebruikte couponcode
-                    'items': <?php echo json_encode($items); ?>
+                    'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>', // Voeg de valuta toe
+                    'value': <?php echo esc_js($cart_total); ?>, // Totaalwaarde van de winkelwagen
+                    'coupon': '<?php echo esc_js($coupon_code); ?>', // Gebruikte couponcode
+                    'items': <?php echo wp_json_encode($items); ?>
                 },
                 'user_data': {
-                    'email_hashed': '<?php echo $hashed_email ?>',
-                    'email': '<?php echo $current_user->user_email ?>'
+                    'email_hashed': '<?php echo esc_js($hashed_email); ?>',
+                    'email': '<?php echo esc_js($current_user->user_email); ?>'
                 }
             });
         </script>
-        <?php
+
+<?php
     }
 }
 
-add_action('woocommerce_before_checkout_form', 'wc_ga4_begin_checkout');
+add_action('woocommerce_before_checkout_form', 'tggr_begin_checkout');
 ?>

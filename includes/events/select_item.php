@@ -1,5 +1,8 @@
 <?php
-function wc_ga4_select_item() {
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_select_item()
+{
     $options = get_option('wc_gtm_options');
     global $product, $wp_query;
 
@@ -30,30 +33,31 @@ function wc_ga4_select_item() {
         }
         // Voeg hier meer condities toe voor andere WooCommerce of WordPress pagina's
 
-        ?>
+?>
         <script>
             window.dataLayer = window.dataLayer || [];
             dataLayer.push({
                 'event': 'select_item',
                 'ecommerce': {
-                    'item_list_id': '<?php echo $item_list_id; ?>',
-                    'item_list_name': '<?php echo $item_list_name; ?>',
+                    'item_list_id': '<?php echo esc_js($item_list_id); ?>',
+                    'item_list_name': '<?php echo esc_js($item_list_name); ?>',
                     'items': [{
-                        'item_id': '<?php echo $product->get_id(); ?>',
-                        'item_name': '<?php echo $product->get_name(); ?>',
-                        'item_category': '<?php echo $category_name; ?>',
-                        'price': '<?php echo $product->get_price(); ?>',
-                        'currency': '<?php echo get_woocommerce_currency(); ?>'
+                        'item_id': '<?php echo esc_js($product->get_id()); ?>',
+                        'item_name': '<?php echo esc_js($product->get_name()); ?>',
+                        'item_category': '<?php echo esc_js($category_name); ?>',
+                        'price': '<?php echo esc_js($product->get_price()); ?>',
+                        'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>'
                     }]
                 },
                 'user_data': {
-                    'email_hashed': '<?php echo $hashed_email; ?>',
-                    'email': '<?php echo $current_user->user_email; ?>'
+                    'email_hashed': '<?php echo esc_js($hashed_email); ?>',
+                    'email': '<?php echo esc_js($current_user->user_email); ?>'
                 }
             });
         </script>
-        <?php
+
+<?php
     }
 }
-add_action('woocommerce_before_single_product', 'wc_ga4_select_item');
+add_action('woocommerce_before_single_product', 'tggr_select_item');
 ?>

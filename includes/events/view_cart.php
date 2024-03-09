@@ -1,6 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-function wc_gtm_view_cart() {
+function tggr_gtm_view_cart()
+{
     $options = get_option('wc_gtm_options');
 
     $current_user = wp_get_current_user();
@@ -31,28 +33,29 @@ function wc_gtm_view_cart() {
                 ];
                 $total_value += $item_total;
             }
-            ?>
+?>
             <script>
                 window.dataLayer = window.dataLayer || [];
                 dataLayer.push({
                     'event': 'view_cart',
                     'ecommerce': {
-                        'currency': '<?php echo get_woocommerce_currency(); ?>',
-                        'value': <?php echo $total_value; ?>,
-                        'items': <?php echo json_encode($products); ?>
+                        'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>',
+                        'value': <?php echo esc_js($total_value); ?>,
+                        'items': <?php echo wp_json_encode($products); ?>
                     },
                     'user_data': {
-                        'email_hashed': '<?php echo $hashed_email ?>',
-                        'email': '<?php echo $email ?>'
+                        'email_hashed': '<?php echo esc_js($hashed_email); ?>',
+                        'email': '<?php echo esc_js($email); ?>'
                         // Include any additional user data here
                     }
                 });
             </script>
-            <?php
+
+<?php
         }
     }
 }
-add_action('wp_footer', 'wc_gtm_view_cart');
+add_action('wp_footer', 'tggr_gtm_view_cart');
 
 
 

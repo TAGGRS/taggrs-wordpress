@@ -1,5 +1,8 @@
 <?php
-function wc_ga4_refund($order_id) {
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_refund($order_id)
+{
     $options = get_option('wc_gtm_options');
     $order = wc_get_order($order_id);
     $items = [];
@@ -24,23 +27,23 @@ function wc_ga4_refund($order_id) {
         ];
     }
 
-    ?>
+?>
     <script>
         window.dataLayer = window.dataLayer || [];
         dataLayer.push({
             'event': 'refund',
             'ecommerce': {
-                'currency': '<?php echo $order->get_currency(); ?>',
-                'transaction_id': '<?php echo $order_id; ?>',
-                'value': '<?php echo $order->get_total(); ?>',
-                'shipping': '<?php echo $order->get_shipping_total(); ?>',
-                'tax': '<?php echo $order->get_total_tax(); ?>',
-                'items': <?php echo json_encode($items); ?>
+                'currency': '<?php echo esc_js($order->get_currency()); ?>',
+                'transaction_id': '<?php echo esc_js($order_id); ?>',
+                'value': '<?php echo esc_js($order->get_total()); ?>',
+                'shipping': '<?php echo esc_js($order->get_shipping_total()); ?>',
+                'tax': '<?php echo esc_js($order->get_total_tax()); ?>',
+                'items': <?php echo wp_json_encode($items); ?>
             }
         });
     </script>
-    <?php
+<?php
 }
 
-add_action('woocommerce_order_status_refunded', 'wc_ga4_refund');
+add_action('woocommerce_order_status_refunded', 'tggr_refund');
 ?>
