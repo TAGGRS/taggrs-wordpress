@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 function wc_gtm_options_page() {
     add_menu_page(
@@ -56,7 +57,15 @@ function wc_gtm_options_page_html() {
         $percentage = ($requests / $request_limit) * 100;
     }
 
-    $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'gtm';
+    // Select tab, can be: gtm, events
+    $active_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'gtm';
+    switch($active_tab):
+        case 'gtm':
+        case 'events':
+            break;
+        default:
+            $active_tab = 'gtm';
+        endswitch;
 
     ?>
     <style>
@@ -112,10 +121,11 @@ function wc_gtm_options_page_html() {
         }
     </style>
     <div class="wrap">
-        <img src="https://i.ibb.co/ckh2NK5/Taggrs-logo-blauw.png" style="width: 250px; height: auto; margin-top: 25px; margin-bottom: 25px;"></img>
+        <?php $image_url = PLUGIN_PATH . 'includes/admin/images/taggrs-logo-blauw.png'; ?>
+        <img src="<?php echo esc_url($image_url)  ?>" style="width: 250px; height: auto; margin-top: 25px; margin-bottom: 25px;"></img>
         <h2 class="nav-tab-wrapper">
-            <a href="?page=wc-gtm-settings&tab=gtm" class="nav-tab <?= $active_tab == 'gtm' ? 'nav-tab-active' : ''; ?>">GTM Settings</a>
-            <a href="?page=wc-gtm-settings&tab=events" class="nav-tab <?= $active_tab == 'events' ? 'nav-tab-active' : ''; ?>">Events</a>
+            <a href="?page=wc-gtm-settings&tab=gtm" class="nav-tab <?php $active_tab == 'gtm' ? 'nav-tab-active' : ''; ?>">GTM Settings</a>
+            <a href="?page=wc-gtm-settings&tab=events" class="nav-tab <?php $active_tab == 'events' ? 'nav-tab-active' : ''; ?>">Events</a>
         </h2>
 
         <div style="display: flex; justify-content: space-between;">
@@ -129,10 +139,10 @@ function wc_gtm_options_page_html() {
 
                             // Display both settings, but use a PHP condition to hide the non-active section
                             ?>
-                            <div <?= $active_tab == 'gtm' ? '' : 'style="display:none"'; ?>>
+                            <div <?php $active_tab == 'gtm' ? '' : 'style="display:none"'; ?>>
                                 <?php do_settings_sections('wc-gtm-settings'); ?>
                             </div>
-                            <div <?= $active_tab == 'events' ? '' : 'style="display:none"'; ?>>
+                            <div <?php $active_tab == 'events' ? '' : 'style="display:none"'; ?>>
                                 <?php do_settings_sections('wc-gtm-settings-events'); ?>
                             </div>
                             <?php
@@ -156,22 +166,6 @@ function wc_gtm_options_page_html() {
                      </div>
                  </div>
             </div>
-            <!-- Right Side Info Block -->
-<!--            <div style="flex: 28%; max-width: 28%;">-->
-<!--                <div class="postbox">-->
-<!--                    <h2 class="hndle" style="margin-left: 10px;">Your TAGGRS Container</h2>-->
-<!--                    <div class="inside">-->
-<!--                        <p><strong>Containername:</strong> --><?php //echo $container_name; ?><!--</p>-->
-<!--                        <p><strong>Tagging URL:</strong> --><?php //echo $tagging_url; ?><!--</p>-->
-<!--                        <p><strong>Plan:</strong> <span class="wc-gtm-plan-badge---><?php //echo $plan_number; ?><!--">--><?php //echo $plan; ?><!--</span></p>-->
-<!--                        <p><strong>Request Limit:</strong></p>-->
-<!--                        <div style="background-color: #f5f5f5; border: 1px solid #ccc; height: 20px; width: 100%; position: relative;">-->
-<!--                       <div style="width: <?php echo $percentage; ?>%; background-color: #0073aa; height: 100%;"></div> -->
-<!--                              <span style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); color: #555;"><?php echo $requests; ?> / <?php echo $request_limit; ?></span> -->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
         </div>
     </div>
     <?php
@@ -253,7 +247,7 @@ function get_request_limit($plan_number) {
 
 function wc_gtm_admin_notices() {
     if ($error = get_transient('wc_gtm_settings_error')) {
-        echo '<div class="error"><p>' . $error . '</p></div>';
+        echo esc_html('<div class="error"><p>' . $error . '</p></div>');
         delete_transient('wc_gtm_settings_error');  // Remove the error now that we've displayed it.
     }
 }
@@ -300,7 +294,7 @@ add_action('update_option_wc_gtm_url', 'wc_gtm_success_message', 10, 3);
 add_action('update_option_wc_gtm_options', 'wc_gtm_success_message', 10, 3);
 
 function wc_gtm_section_gtm_cb($args) {
-    echo 'Enter your Google Tag Manager settings below:';
+    echo esc_html('Enter your Google Tag Manager settings below:');
 }
 
 function wc_gtm_code_cb($args) {
@@ -311,26 +305,26 @@ function wc_gtm_code_cb($args) {
 
 function wc_gtm_url_cb($args) {
     $gtm_url = get_option('wc_gtm_url');
-    echo '<input name="wc_gtm_url" id="wc_gtm_url" type="text" value="' . esc_attr($gtm_url) . '" class="regular-text">';
+    echo ( '<input name="wc_gtm_url" id="wc_gtm_url" type="text" value="' . esc_attr($gtm_url) . '" class="regular-text">' );
 }
 
 function wc_gtm_section_callback($args) {
-    echo '<p class="description"><i>You have the option to select the events of your choice, and all events include the transmission of enhanced conversions.</i></p>';
-    echo '<p class="description">Enable or disable the following events:</p>';
+    echo ( '<p class="description"><i>You have the option to select the events of your choice, and all events include the transmission of enhanced conversions.</i></p>' );
+    echo ( '<p class="description">Enable or disable the following events:</p>' );
 }
 
 function wc_gtm_field_callback($args) {
     $options = get_option('wc_gtm_options');
     $checked = isset($options[$args['event_name']]) ? checked($options[$args['event_name']], 1, false) : '';
-    echo "<input name='wc_gtm_options[{$args['event_name']}]' type='checkbox' id='{$args['label_for']}' value='1'  {$checked}>";
+    echo ("<input name='wc_gtm_options[{$args['event_name']}]' type='checkbox' id='{$args['label_for']}' value='1'  {$checked}>");
 }
 
 function wc_gtm_url_toggle_cb() {
     $options = get_option('wc_gtm_options', array());
     $value = isset($options['wc_gtm_url_toggle']) ? $options['wc_gtm_url_toggle'] : '';
-    echo '<input type="text" id="wc_gtm_url_toggle" name="wc_gtm_options[wc_gtm_url_toggle]" style="width:350px; " value="' . esc_attr($value) . '" />';
-    echo '<p class="description">Read <a href="https://taggrs.io/en/enhanced-tracking-script/">this article</a> to find out how to use the Enhanced Tracking Script</p>';
-    echo '<p class="description"><i>If you do not want to use the Enhanced Tracking Script, leave this field empty</i></p>';
+    echo ( '<input type="text" id="wc_gtm_url_toggle" name="wc_gtm_options[wc_gtm_url_toggle]" style="width:350px; " value="' . esc_attr($value) . '" />' );
+    echo ( '<p class="description">Read <a href="https://taggrs.io/en/enhanced-tracking-script/">this article</a> to find out how to use the Enhanced Tracking Script</p>' );
+    echo ( '<p class="description"><i>If you do not want to use the Enhanced Tracking Script, leave this field empty</i></p>' );
 
 }
 

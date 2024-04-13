@@ -3,18 +3,22 @@
 Plugin Name: TAGGRS - Server Side Tracking
 Description: This integration introduces a Google Analytics 4 (GA4) data layer with server-side tracking capabilities into WooCommerce. It enhances customer interaction tracking by combining traditional client-side events with server-side data collection. This approach offers more reliable analytics, improved privacy compliance, and a comprehensive understanding of user behavior and e-commerce performance in your WooCommerce store.
 Version: 1.1.3
-Author: TAGGRS BV
+Author: TAGGRS BV 
+License: GPL v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-function ga4_enqueue_jquery() {
+function tggr_enqueue_jquery() {
     wp_enqueue_script('jquery');
 }
-add_action('wp_enqueue_scripts', 'ga4_enqueue_jquery');
+add_action('wp_enqueue_scripts', 'tggr_enqueue_jquery');
 
+// Constant plugin path
+define('PLUGIN_PATH', plugin_dir_url( __FILE__ ));
 
 // Widgets
 require_once plugin_dir_path(__FILE__) . 'includes/widgets/taggrs_container_stats.php';
@@ -24,6 +28,9 @@ require_once plugin_dir_path(__FILE__) . 'includes/admin/init.php';
 
 // inject gtm codes
 require_once plugin_dir_path(__FILE__) . 'includes/inject_gtm.php';
+
+// load functions
+require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
 
 // load events
 require_once plugin_dir_path(__FILE__) . 'includes/events/view_item.php';

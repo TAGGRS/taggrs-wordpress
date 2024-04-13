@@ -1,5 +1,8 @@
 <?php
-function wc_ga4_add_to_wishlist() {
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_add_to_wishlist()
+{
     $options = get_option('wc_gtm_options');
 
     $current_user = wp_get_current_user();
@@ -25,26 +28,27 @@ function wc_ga4_add_to_wishlist() {
             $total_value += $item_price * $item->quantity;
         }
 
-        ?>
+?>
         <script>
             window.dataLayer = window.dataLayer || [];
             dataLayer.push({
                 'event': 'add_to_wishlist',
                 'ecommerce': {
-                    'currency': '<?php echo get_woocommerce_currency(); ?>', // De valuta van de winkel
-                    'value': <?php echo $total_value; ?>, // Totale waarde van de toegevoegde items
-                    'items': <?php echo json_encode($items); ?>
+                    'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>', // De valuta van de winkel
+                    'value': <?php echo esc_js($total_value); ?>, // Totale waarde van de toegevoegde items
+                    'items': <?php echo wp_json_encode($items); ?>
                 },
                 'user_data': {
-                    'email_hashed': '<?php echo $hashed_email; ?>',
-                    'email': '<?php echo $current_user->user_email; ?>'
+                    'email_hashed': '<?php echo esc_js($hashed_email); ?>',
+                    'email': '<?php echo esc_js($current_user->user_email); ?>'
                 }
             });
         </script>
-        <?php
+
+<?php
     }
 }
 
 // Pas de hook aan op basis van je verlanglijst functionaliteit.
-add_action('your_wishlist_add_action', 'wc_ga4_add_to_wishlist');
+add_action('your_wishlist_add_action', 'tggr_add_to_wishlist');
 ?>

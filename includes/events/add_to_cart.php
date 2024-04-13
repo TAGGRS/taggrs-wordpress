@@ -43,6 +43,7 @@ function tggr_add_to_cart_event($cart_item_key, $product_id, $quantity, $variati
 }
 add_action('woocommerce_add_to_cart', 'tggr_add_to_cart_event', 10, 6);
 
+
 function tggr_ajax_add_to_cart_script()
 {
     $options = get_option('wc_gtm_options');

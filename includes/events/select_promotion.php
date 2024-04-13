@@ -1,5 +1,8 @@
 <?php
-function wc_ga4_select_promotion($coupon_code) {
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_select_promotion($coupon_code)
+{
     $options = get_option('wc_gtm_options');
     $coupon = new WC_Coupon($coupon_code);
 
@@ -31,25 +34,32 @@ function wc_ga4_select_promotion($coupon_code) {
             );
         }
 
-        ?>
+?>
         <script>
             window.dataLayer = window.dataLayer || [];
             dataLayer.push({
-                'event': 'select_promotion',
+                'event': 'select_item',
                 'ecommerce': {
-                    'promotion_id': '<?php echo $coupon->get_id(); ?>',
-                    'promotion_name': '<?php echo $coupon->get_code(); ?>',
-                    'items': <?php echo json_encode($items); ?>
+                    'item_list_id': '<?php echo esc_js($item_list_id); ?>',
+                    'item_list_name': '<?php echo esc_js($item_list_name); ?>',
+                    'items': [{
+                        'item_id': '<?php echo esc_js($product->get_id()); ?>',
+                        'item_name': '<?php echo esc_js($product->get_name()); ?>',
+                        'item_category': '<?php echo esc_js($category_name); ?>',
+                        'price': '<?php echo esc_js($product->get_price()); ?>',
+                        'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>'
+                    }]
                 },
                 'user_data': {
-                    'email': '<?php echo $current_user->user_email ?>',
-                    'email_hashed': '<?php echo $hashed_email ?>'
+                    'email_hashed': '<?php echo esc_js($hashed_email); ?>',
+                    'email': '<?php echo esc_js($current_user->user_email); ?>'
                 }
             });
         </script>
-        <?php
+
+<?php
     }
 }
 
-add_action('woocommerce_applied_coupon', 'wc_ga4_select_promotion');
+add_action('woocommerce_applied_coupon', 'tggr_select_promotion');
 ?>

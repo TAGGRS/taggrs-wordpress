@@ -1,5 +1,8 @@
 <?php
-function wc_gtm_view_item_list() {
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+function tggr_gtm_view_item_list()
+{
     $options = get_option('wc_gtm_options');
     $current_user = wp_get_current_user();
     $hashed_email = '';
@@ -10,11 +13,11 @@ function wc_gtm_view_item_list() {
     }
 
     if (isset($options['view_item_list']) && $options['view_item_list']) {
-        if ( is_shop() || is_product_category() || is_product_tag() ) {
+        if (is_shop() || is_product_category() || is_product_tag()) {
             global $wp_query;
             $products = [];
-            foreach ( $wp_query->posts as $post ) {
-                $product = wc_get_product( $post->ID );
+            foreach ($wp_query->posts as $post) {
+                $product = wc_get_product($post->ID);
                 $products[] = $products[] = [
                     'item_id' => $product->get_id(),
                     'item_name' => $product->get_name(),
@@ -36,26 +39,27 @@ function wc_gtm_view_item_list() {
                 $item_list_id = 'shop_page';
                 $item_list_name = 'Shop Page';
             }
-            ?>
+?>
             <script>
                 window.dataLayer = window.dataLayer || [];
                 dataLayer.push({
                     'event': 'view_item_list',
                     'ecommerce': {
-                        'item_list_id': '<?php echo $item_list_id; ?>',
-                        'item_list_name': '<?php echo $item_list_name; ?>',
-                        'items': <?php echo json_encode($products); ?>
+                        'item_list_id': '<?php echo esc_js($item_list_id); ?>',
+                        'item_list_name': '<?php echo esc_js($item_list_name); ?>',
+                        'items': <?php echo wp_json_encode($products); ?>
                     },
                     'user_data': {
-                        'email_hashed': '<?php echo $hashed_email ?>',
-                        'email': '<?php echo $email ?>'
+                        'email_hashed': '<?php echo esc_js($hashed_email); ?>',
+                        'email': '<?php echo esc_js($email); ?>'
                     }
                 });
             </script>
-            <?php
+
+<?php
         }
     }
 }
-add_action('wp_footer', 'wc_gtm_view_item_list');
+add_action('wp_footer', 'tggr_gtm_view_item_list');
 
 ?>
