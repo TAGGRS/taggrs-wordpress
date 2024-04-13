@@ -44,22 +44,21 @@ function tggr_add_to_cart_event($cart_item_key, $product_id, $quantity, $variati
 add_action('woocommerce_add_to_cart', 'tggr_add_to_cart_event', 10, 6);
 
 
-
 function tggr_ajax_add_to_cart_script()
 {
-
     $options = get_option('wc_gtm_options');
     if (isset($options['add_to_cart']) && $options['add_to_cart']) {
 ?>
         <script type="text/javascript">
+            
             jQuery(document).ready(function($) {
-                $(document.body).on('added_to_cart', function(event, fragments, cart_hash, $thisbutton) {
+                $(document.body).on('added_to_cart', function(event, fragments, cart_hash, $thisbutton) {                    
                     // Extract product data from the clicked button
                     var product_id = $thisbutton.data('product_id');
                     var product_name = $thisbutton.data('product_name'); // Ensure this attribute is set
                     var quantity = $thisbutton.data('quantity'); // Ensure this attribute is set
                     var product_price = $thisbutton.data('price'); // Ensure this attribute is set
-                    var product_category = $thisbutton.data('category');
+                    var product_category = getProductCategories($thisbutton[0].parentNode).join(', ');
 
                     // Hashed email and email are assumed here as data attributes, otherwise, these should be obtained in another way
                     var email = $thisbutton.data('email');
@@ -86,14 +85,21 @@ function tggr_ajax_add_to_cart_script()
                     });
                 });
             });
+
+            // Above each add to cart button an li element has all the product's categories. This is stored in the classlist. Eg: "product_cat-{category}".
+            const getProductCategories = (element) => {
+                const allClasses = element.className.split(/\s+/);
+                const filteredClasses = allClasses.filter(cls => cls.startsWith('product_cat-'));
+                const categorySuffixes = filteredClasses.map(cls => cls.substring('product_cat-'.length));
+
+                return categorySuffixes;
+            }
         </script>
 
     <?php
     }
 }
 add_action('wp_footer', 'tggr_ajax_add_to_cart_script');
-
-
 
 function tggr_print_add_to_cart_script()
 {
