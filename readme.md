@@ -62,6 +62,9 @@ We advise all users to review Google Tag Manager's Terms of Service and Privacy 
 
 == Changelog ==
 
+= 1.0.2 =
+- Added categories to ad_to_cart AJAX event.
+
 = 1.0.1 =
 - Update licenses to GPLv2
 - Included TAGGRS logo, limiting external dependencies
