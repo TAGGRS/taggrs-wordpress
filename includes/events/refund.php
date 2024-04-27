@@ -9,6 +9,11 @@ function tggr_refund($order_id)
 
     foreach ($order->get_items() as $item_id => $item) {
         $product = $item->get_product();
+        if(empty($product) === True)
+        {
+            continue;
+        }
+        
         $categories = get_the_terms($product->get_id(), 'product_cat');
         $item_categories = array();
         foreach ($categories as $category) {
@@ -21,7 +26,7 @@ function tggr_refund($order_id)
         $items[] = [
             'item_id' => $product->get_id(),
             'item_name' => $product->get_name(),
-            'item_category' => $item_categories[0] ?? '',
+            'item_category' => implode(', ', $item_categories) ?? '',
             'price' => $order->get_item_total($item),
             'quantity' => $item->get_quantity()
         ];
