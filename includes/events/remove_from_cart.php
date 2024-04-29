@@ -18,9 +18,18 @@ function tggr_remove_from_cart_event($cart_item_key, $instance)
 
     $product = wc_get_product($cart_item['product_id']);
 
+    var_dump($product);
+
     if (!$product) {
         return;
     }
+
+    $categories = wp_get_post_terms($product->get_id(), 'product_cat');
+    $category_names = array();
+    foreach ($categories as $category) {
+        $category_names[] = $category->name;
+    }
+    $category_list = implode(', ', $category_names);
 
     $tggr_event_data = array(
         'event'     => 'remove_from_cart',
@@ -30,7 +39,7 @@ function tggr_remove_from_cart_event($cart_item_key, $instance)
             'items'    => array(array(
                 'item_id'    => $product->get_id(),
                 'item_name'  => $product->get_name(),
-                'item_category' => $product->get_category(),
+                'item_category' => $category_list,
                 'quantity'   => 1,
                 'price'      => floatval($product->get_price()),
             )),
