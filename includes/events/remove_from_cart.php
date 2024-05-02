@@ -65,7 +65,7 @@ function tggr_print_remove_from_cart_script()
         return;
     }
 
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     if (isset($options['remove_from_cart']) && $options['remove_from_cart']) {
 ?>
         <script type="text/javascript">
@@ -92,7 +92,7 @@ function tggr_ajax_remove_from_cart_script()
         $hashed_email = hash('sha256', $current_user->user_email);
         $email = $current_user->user_email;
     }
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     if (isset($options['remove_from_cart']) && $options['remove_from_cart']) {
     ?>
         <script type="text/javascript">

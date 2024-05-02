@@ -4,7 +4,7 @@ jQuery(document).ready(function($) {
         console.log('removing!')
 
         // Get the product data
-        var removedProduct = wc_gtm_vars.removedProduct;
+        var removedProduct = tggr_vars.removedProduct;
         console.log(removedProduct)
 
 

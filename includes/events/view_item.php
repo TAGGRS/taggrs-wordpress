@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 function tggr_gtm_view_item()
 {
 
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     $current_user = wp_get_current_user();
     $hashed_email = '';
     if ($current_user->exists()) {

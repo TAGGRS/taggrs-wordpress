@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 function tggr_select_item()
 {
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     global $product, $wp_query;
 
     $current_user = wp_get_current_user();
