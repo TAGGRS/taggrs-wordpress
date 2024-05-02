@@ -8,7 +8,7 @@ function wc_gtm_options_page() {
         'manage_options',            // Capability
         'wc-gtm-settings',           // Menu slug
         'wc_gtm_options_page_html',  // Callback function
-        'https://i.ibb.co/6b4yhy9/wp-logo-taggrs.png',       // Icon URL (using a WordPress dashicon)
+        plugins_url('/images/wp-logo-taggrs.png', __FILE__),       // Icon URL (using a WordPress dashicon)
         25                           // Position
     );
 }
