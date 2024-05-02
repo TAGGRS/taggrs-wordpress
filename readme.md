@@ -1,9 +1,9 @@
 === TAGGRS Server-Side Integration ===
 Contributors: TAGGRS
 Tags: woocommerce, google analytics, ga4, server-side tracking, e-commerce analytics, enhanced conversions, user data, taggrs, server side tracking, server side tagging, google ads, conversion api, capi
-Requires at least: WordPress 4.5
-Tested up to: WordPress 6.4
-Stable tag: 1.0.1
+Requires at least: 4.5
+Tested up to: 6.4
+Stable tag: 1.0.3
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -61,6 +61,11 @@ Please be aware that by using this TAGGRS Server-Side Integration plugin, data w
 We advise all users to review Google Tag Manager's Terms of Service and Privacy Policy to ensure compliance with data protection and privacy laws applicable to your use case. It is your responsibility to adhere to any legal requirements pertaining to data collection and processing activities conducted through GTM.
 
 == Changelog ==
+
+= 1.0.3 =
+- Added TAGGRS Logo to the admins include files.
+- Changed all function names to "tggr_".
+- Changed versions in documents.
 
 = 1.0.2 =
 - Added categories to ad_to_cart AJAX event.
