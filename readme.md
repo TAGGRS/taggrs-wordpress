@@ -44,6 +44,7 @@ No, its not required to have a TAGGRS account. We recommend it to get the most o
 The plugin adheres to privacy regulations by providing server-side tracking, which enhances data privacy and compliance.
 
 == Third-Party Service Dependencies ==
+= Google Tag Manager =
 This TAGGRS Server-Side Integration plugin integrates with Google Tag Manager (GTM) for server-side tracking. This integration allows us to send data directly to GTM servers without requiring client-side scripting. This approach enhances data accuracy and privacy compliance.
 
 = Why We Use Google Tag Manager =
@@ -57,6 +58,21 @@ Please be aware that by using this TAGGRS Server-Side Integration plugin, data w
 - **Terms of Use**: [Google Terms of Service](https://policies.google.com/terms)
 - **Privacy Policy**: [Google Privacy Policy](https://policies.google.com/privacy)
 
+= TAGGRS.io =
+This TAGGRS Server-Side Integration plugin integrates with TAGGRS for server-side tracking. This integration allows us to send data directly to TAGGRS servers without requiring client-side scripting. This approach enhances data accuracy and privacy compliance.
+
+= Why We Use TAGGRS =
+We leverage TAGGRS due to its robust infrastructure and flexibility in handling server-side tracking. This enables our users to implement custom tracking solutions that meet their unique business needs while ensuring data is managed securely and efficiently.
+
+= Data Transmission Disclosure =
+Please be aware that by using this TAGGRS Server-Side Integration plugin, data will be transmitted to TAGGRS's servers as part of the tracking process. This may include, but is not limited to, user interactions, IP addresses, and other data you configure to track.
+
+= Third-Party Links =
+- **TAGGRS Service**: [TAGGRS](https://taggrs.io/)
+- **Terms and Conditions**: [TAGGRS Terms and Conditions](https://taggrs.io/en/terms-and-conditions/)
+- **Privacy Statement**: [TAGGRS Privacy Statement](https://taggrs.io/en/privacy-statement/)
+- **Service level agreement**: [TAGGRS Terms and Conditions](https://taggrs.io/en/service-level-agreement/)
+
 = Legal Compliance =
 We advise all users to review Google Tag Manager's Terms of Service and Privacy Policy to ensure compliance with data protection and privacy laws applicable to your use case. It is your responsibility to adhere to any legal requirements pertaining to data collection and processing activities conducted through GTM.
 
@@ -66,6 +82,7 @@ We advise all users to review Google Tag Manager's Terms of Service and Privacy 
 - Added TAGGRS Logo to the admins include files.
 - Changed all function names to "tggr_".
 - Changed versions in documents.
+- Added TAGGRS third party usage notice.
 
 = 1.0.2 =
 - Added categories to ad_to_cart AJAX event.
