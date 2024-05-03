@@ -142,6 +142,9 @@ function tggr_get_product_details_callback()
 {
     $product_id = 15;
     $product = wc_get_product($product_id);
+    if (!$product) {
+        wp_send_json_error('Product not found');
+    }
     $categories = wp_get_post_terms($product_id, 'product_cat');
     $category_names = array();
     foreach ($categories as $category) {
