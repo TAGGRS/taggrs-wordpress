@@ -18,8 +18,6 @@ function tggr_remove_from_cart_event($cart_item_key, $instance)
 
     $product = wc_get_product($cart_item['product_id']);
 
-    var_dump($product);
-
     if (!$product) {
         return;
     }
