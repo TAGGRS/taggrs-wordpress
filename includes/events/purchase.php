@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 function tggr_gtm_purchase($order_id)
 {
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
 
     if (isset($options['purchase']) && $options['purchase']) {
         $order = wc_get_order($order_id);

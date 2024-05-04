@@ -46,7 +46,7 @@ add_action('woocommerce_add_to_cart', 'tggr_add_to_cart_event', 10, 6);
 
 function tggr_ajax_add_to_cart_script()
 {
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     if (isset($options['add_to_cart']) && $options['add_to_cart']) {
 ?>
         <script type="text/javascript">
@@ -107,7 +107,7 @@ function tggr_print_add_to_cart_script()
         return;
     }
 
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     if (isset($options['add_to_cart']) && $options['add_to_cart']) {
     ?>
         <script type="text/javascript">

@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 function tggr_select_promotion($coupon_code)
 {
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     $coupon = new WC_Coupon($coupon_code);
 
     $current_user = wp_get_current_user();
