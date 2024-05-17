@@ -17,6 +17,9 @@ function tggr_gtm_view_item()
             if (!$product) {
                 $product = wc_get_product(get_the_ID());
             }
+
+            $item = tggr_format_item($product->get_id());
+
             if ($product) {
 ?>
                 <script>
@@ -26,12 +29,7 @@ function tggr_gtm_view_item()
                         'ecommerce': {
                             'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>',
                             'value': '<?php echo esc_js($product->get_price()); ?>',
-                            'items': [{
-                                'item_id': '<?php echo esc_js($product->get_id()); ?>',
-                                'item_name': '<?php echo esc_js($product->get_name()); ?>',
-                                'price': '<?php echo esc_js($product->get_price()); ?>',
-                                'item_category': '<?php echo esc_js(implode(", ", $product->get_category_ids())); ?>',
-                            }],
+                            'items': [<?php echo wp_json_encode($item); ?>],
                             'user_data': {
                                 'email': '<?php echo esc_js($current_user->user_email); ?>',
                                 'email_hashed': '<?php echo esc_js($hashed_email); ?>'

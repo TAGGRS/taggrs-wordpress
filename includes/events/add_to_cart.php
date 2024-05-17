@@ -7,28 +7,20 @@ function tggr_add_to_cart_event($cart_item_key, $product_id, $quantity, $variati
     $current_user = wp_get_current_user();
     $hashed_email = '';
     $email = '';
+
     if ($current_user->exists()) {
         $hashed_email = tggr_hash_email($current_user->user_email);
         $email = $current_user->user_email;
     }
-    $categories = wp_get_post_terms($product_id, 'product_cat');
-    $category_names = array();
-    foreach ($categories as $category) {
-        $category_names[] = $category->name;
-    }
-    $category_list = implode(', ', $category_names);
+
+    $cart = WC()->cart;
+    $item = tggr_format_item($product_id, $quantity);
     $tggr_event_data = array(
         'event'     => 'add_to_cart',
         'ecommerce' => array(
             'currency' => get_woocommerce_currency(),
             'value' => floatval($product->get_price()),
-            'items'    => array(array(
-                'item_id'    => $product_id,
-                'item_name'  => $product->get_name(),
-                'item_category' => $category_list,
-                'quantity'   => $quantity,
-                'price'      => floatval($product->get_price()),
-            )),
+            'items'    => array($item),
             'user_data' => array(
                 'email_hashed' => $hashed_email,
                 'email' => $email
@@ -58,11 +50,29 @@ function tggr_ajax_add_to_cart_script()
                     var product_name = $thisbutton.data('product_name'); // Ensure this attribute is set
                     var quantity = $thisbutton.data('quantity'); // Ensure this attribute is set
                     var product_price = $thisbutton.data('price'); // Ensure this attribute is set
-                    var product_category = getProductCategories($thisbutton[0].parentNode).join(', ');
+                    var product_categories = getProductCategories($thisbutton[0].parentNode);
 
                     // Hashed email and email are assumed here as data attributes, otherwise, these should be obtained in another way
                     var email = $thisbutton.data('email');
                     var hashed_email = $thisbutton.data('hashed_email');
+
+                    var item = {
+                        'item_id': product_id,
+                        'item_name': product_name,
+                        'quantity': quantity,
+                        'price': product_price
+                    };
+
+                    if (product_categories.length > 0) {
+                        for (let i = 0; i < product_categories.length; i++) {
+                            const product_category = product_categories[i];
+                            if(i > 0)
+                                item['item_category' + (i + 1)] = product_category;
+                            else 
+                                item['item_category'] = product_category;
+                        }
+                        item['item_category'] = product_categories[0];
+                    }
 
                     window.dataLayer = window.dataLayer || [];
                     window.dataLayer.push({
@@ -70,13 +80,7 @@ function tggr_ajax_add_to_cart_script()
                         'ecommerce': {
                             'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>',
                             'value': product_price,
-                            'items': [{
-                                'item_id': product_id,
-                                'item_name': product_name,
-                                'item_category': product_category,
-                                'quantity': quantity,
-                                'price': product_price
-                            }],
+                            'items': [item],
                             'user_data': {
                                 'email_hashed': hashed_email,
                                 'email': email

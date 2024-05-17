@@ -24,13 +24,7 @@ function tggr_gtm_view_cart()
                 $categories = wp_get_post_terms($product->get_id(), 'product_cat', array('fields' => 'names'));
                 $category_list = implode(', ', $categories);
 
-                $products[] = [
-                    'item_id' => $product->get_id(),
-                    'item_name' => $product->get_name(),
-                    'item_category' => $category_list,
-                    'quantity' => $cart_item['quantity'],
-                    'price' => $product->get_price(),
-                ];
+                $products[] = tggr_format_item($product->get_id(), $cart_item['quantity']);
                 $total_value += $item_total;
             }
 ?>

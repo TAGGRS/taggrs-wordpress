@@ -5,7 +5,9 @@ function tggr_refund($order_id)
 {
     $options = get_option('tggr_options');
     $order = wc_get_order($order_id);
-    $items = [];
+
+    $cart = WC()->cart;
+    $items = array();
 
     foreach ($order->get_items() as $item_id => $item) {
         $product = $item->get_product();
@@ -23,13 +25,7 @@ function tggr_refund($order_id)
         // Voeg hier aanvullende productcategorieën toe indien nodig
         // Voorbeeld: $item_category2 = 'Adult';
 
-        $items[] = [
-            'item_id' => $product->get_id(),
-            'item_name' => $product->get_name(),
-            'item_category' => implode(', ', $item_categories) ?? '',
-            'price' => $order->get_item_total($item),
-            'quantity' => $item->get_quantity()
-        ];
+        $items[] = tggr_format_item($product->get_id(), $item->get_quantity());
     }
 
 ?>

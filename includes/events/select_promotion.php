@@ -23,15 +23,7 @@ function tggr_select_promotion($coupon_code)
             // Voeg logica toe om de korting voor dit specifieke item te berekenen
             // Dit hangt af van hoe je kortingen configureert in WooCommerce
 
-            $items[] = array(
-                'item_id' => $product_id,
-                'item_name' => $product->get_name(),
-                'coupon' => $coupon->get_code(),
-                'discount' => $coupon->get_amount(),
-                'price' => $product->get_price(),
-                'quantity' => $cart_item['quantity']
-                // Voeg indien nodig meer attributen toe
-            );
+            $items[] = tggr_format_item($product_id, $cart_item['quantity']);
         }
 
 ?>
@@ -42,13 +34,7 @@ function tggr_select_promotion($coupon_code)
                 'ecommerce': {
                     'item_list_id': '<?php echo esc_js($item_list_id); ?>',
                     'item_list_name': '<?php echo esc_js($item_list_name); ?>',
-                    'items': [{
-                        'item_id': '<?php echo esc_js($product->get_id()); ?>',
-                        'item_name': '<?php echo esc_js($product->get_name()); ?>',
-                        'item_category': '<?php echo esc_js($category_name); ?>',
-                        'price': '<?php echo esc_js($product->get_price()); ?>',
-                        'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>'
-                    }]
+                    'items': <?php echo wp_json_encode($items); ?>
                 },
                 'user_data': {
                     'email_hashed': '<?php echo esc_js($hashed_email); ?>',
