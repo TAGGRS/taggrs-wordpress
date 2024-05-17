@@ -22,25 +22,14 @@ function tggr_remove_from_cart_event($cart_item_key, $instance)
         return;
     }
 
-    $categories = wp_get_post_terms($product->get_id(), 'product_cat');
-    $category_names = array();
-    foreach ($categories as $category) {
-        $category_names[] = $category->name;
-    }
-    $category_list = implode(', ', $category_names);
+    $item = tggr_format_item($product->get_id(), $cart_item['quantity']);
 
     $tggr_event_data = array(
         'event'     => 'remove_from_cart',
         'ecommerce' => array(
             'currency' => get_woocommerce_currency(),
             'value' => floatval($product->get_price()),
-            'items'    => array(array(
-                'item_id'    => $product->get_id(),
-                'item_name'  => $product->get_name(),
-                'item_category' => $category_list,
-                'quantity'   => 1,
-                'price'      => floatval($product->get_price()),
-            )),
+            'items'    => array($item),
             'user_data' => array(
                 'email_hashed' => $hashed_email,
                 'email' => $email

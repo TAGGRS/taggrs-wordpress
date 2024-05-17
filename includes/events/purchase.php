@@ -12,13 +12,7 @@ function tggr_gtm_purchase($order_id)
 
         foreach ($items as $item) {
             $product = $item->get_product();
-            $products[] = [
-                'item_id' => $product->get_id(),
-                'item_name' => $product->get_name(),
-                'quantity' => $item->get_quantity(),
-                'price' => $product->get_price(),
-                'item_category' => implode(', ', $product->get_category_ids()),
-            ];
+            $products[] = tggr_format_item($product->get_id(), $item->get_quantity());
         }
 
         $hashed_email = tggr_hash_email($order->get_billing_email());

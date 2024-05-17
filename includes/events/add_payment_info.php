@@ -13,27 +13,15 @@ function tggr_add_payment_info()
 
     // Controleer of we in de checkout zijn
     if (is_checkout()) {
-        $order_id = WC()->session->get('order_awaiting_payment');
-        $order = wc_get_order($order_id);
-
-        $items = array();
-        $total_value = 0; // Initialiseren van de totale waarde
-        if ($order) {
-            foreach ($order->get_items() as $item_id => $item) {
-                $product = $item->get_product();
-                $categories = wp_get_post_terms($product->get_id(), 'product_cat');
-                $category_name = !empty($categories) ? $categories[0]->name : ''; // Neem de naam van de eerste categorie
-
-                $item_total = $order->get_item_total($item, false, false);
-                $total_value += $item_total * $item->get_quantity(); // Update de totale waarde
-
-                $items[] = array(
-                    'item_name' => $product->get_name(),
-                    'item_id' => $product->get_id(),
-                    'item_category' => $category_name,
-                    'price' => $item_total,
-                    'quantity' => $item->get_quantity()
-                );
+        $cart = WC()->cart;
+        if ($cart) {
+            $total_value = 0;
+            $items = tggr_format_cart_items($cart);
+    
+    
+            foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
+                $item_total = $cart_item['line_total'];
+                $total_value += $item_total; // Update de totale waarde
             }
         }
     }
