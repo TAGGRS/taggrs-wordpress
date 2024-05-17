@@ -83,6 +83,7 @@ We advise all users to review Google Tag Manager's Terms of Service and Privacy 
 - Changed all function names to "tggr_".
 - Changed versions in documents.
 - Added TAGGRS third party usage notice.
+- Added tggr_format_item & tggr_format_cart_items for consistency
 
 = 1.0.2 =
 - Added categories to ad_to_cart AJAX event.

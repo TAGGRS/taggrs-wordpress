@@ -10,9 +10,6 @@ function tggr_format_cart_items($cart){
     $items = array();
 
     foreach($cart->cart_contents as $cart_item){
-
-        //var_dump($cart_item);
-
         $product_id = $cart_item['product_id'];
         $product_quantity = $cart_item['quantity'];
         $item = tggr_format_item($product_id, $product_quantity);
