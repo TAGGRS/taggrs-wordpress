@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 function tggr_add_to_wishlist()
 {
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
 
     $current_user = wp_get_current_user();
     $hashed_email = '';
@@ -13,18 +13,13 @@ function tggr_add_to_wishlist()
     if (isset($options['add_to_wishlist']) && $options['add_to_wishlist']) {
         $wishlist_items = get_user_wishlist_items(); // Vervang dit door de daadwerkelijke logica om verlanglijst items op te halen.
 
-        $items = [];
+        $cart = WC()->cart;
+        $items = tggr_format_cart_items($cart);
+
         $total_value = 0;
         foreach ($wishlist_items as $item) {
             $product = wc_get_product($item->product_id);
             $item_price = $product->get_price();
-            $items[] = [
-                'item_id' => $product->get_id(),
-                'item_name' => $product->get_name(),
-                'item_category' => implode(', ', $product->get_category_ids()),
-                'price' => $item_price,
-                'quantity' => $item->quantity  // Aannemend dat elk verlanglijst item een hoeveelheid heeft.
-            ];
             $total_value += $item_price * $item->quantity;
         }
 

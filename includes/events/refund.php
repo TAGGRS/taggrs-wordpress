@@ -3,12 +3,19 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 function tggr_refund($order_id)
 {
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     $order = wc_get_order($order_id);
-    $items = [];
+
+    $cart = WC()->cart;
+    $items = array();
 
     foreach ($order->get_items() as $item_id => $item) {
         $product = $item->get_product();
+        if(empty($product) === True)
+        {
+            continue;
+        }
+        
         $categories = get_the_terms($product->get_id(), 'product_cat');
         $item_categories = array();
         foreach ($categories as $category) {
@@ -18,13 +25,7 @@ function tggr_refund($order_id)
         // Voeg hier aanvullende productcategorieën toe indien nodig
         // Voorbeeld: $item_category2 = 'Adult';
 
-        $items[] = [
-            'item_id' => $product->get_id(),
-            'item_name' => $product->get_name(),
-            'item_category' => $item_categories[0] ?? '',
-            'price' => $order->get_item_total($item),
-            'quantity' => $item->get_quantity()
-        ];
+        $items[] = tggr_format_item($product->get_id(), $item->get_quantity());
     }
 
 ?>

@@ -1,9 +1,9 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) exit;
 
 function tggr_view_promotion()
 {
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     $current_user = wp_get_current_user();
     $hashed_email = '';
     $email = '';
@@ -44,23 +44,33 @@ function tggr_view_promotion()
         }
 
 ?>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            dataLayer.push({
-                'event': 'view_promotion',
-                'ecommerce': {
-                    'promotion_id': '<?php echo esc_js($promotion_id); ?>',
-                    'promotion_name': '<?php echo esc_js($promotion_code); ?>',
-                    'items': <?php echo wp_json_encode($promotion_items); ?>
-                },
-                'user_data': {
-                    'email_hashed': '<?php echo esc_js($hashed_email); ?>',
-                    'email': '<?php echo esc_js($email); ?>'
-                }
-            });
-        </script>
+
+        <?php
+        foreach ($promotions as $promotion) {
+            $promotion_id = $promotion['item_id'];
+            $promotion_id = $promotion['item_name'];
+            $promotion_code = $promotion['coupon'];
+            $promotion_items = [];
+        ?>
+            <script>
+                var_dump($promotion_id);
+                window.dataLayer = window.dataLayer || [];
+                dataLayer.push({
+                    'event': 'view_promotion',
+                    'ecommerce': {
+                        'promotion_id': '<?php echo esc_js($promotion_id); ?>',
+                        'promotion_name': '<?php echo esc_js($promotion_code); ?>',
+                        'items': <?php echo wp_json_encode($promotion_items); ?>
+                    },
+                    'user_data': {
+                        'email_hashed': '<?php echo esc_js($hashed_email); ?>',
+                        'email': '<?php echo esc_js($email); ?>'
+                    }
+                });
+            </script>
 
 <?php
+        }
     }
 }
 

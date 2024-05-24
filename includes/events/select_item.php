@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 function tggr_select_item()
 {
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     global $product, $wp_query;
 
     $current_user = wp_get_current_user();
@@ -31,7 +31,8 @@ function tggr_select_item()
             $item_list_id = 'shop_page';
             $item_list_name = 'Shop Page';
         }
-        // Voeg hier meer condities toe voor andere WooCommerce of WordPress pagina's
+        
+        $item = tggr_format_item($product->get_id());
 
 ?>
         <script>
@@ -41,13 +42,7 @@ function tggr_select_item()
                 'ecommerce': {
                     'item_list_id': '<?php echo esc_js($item_list_id); ?>',
                     'item_list_name': '<?php echo esc_js($item_list_name); ?>',
-                    'items': [{
-                        'item_id': '<?php echo esc_js($product->get_id()); ?>',
-                        'item_name': '<?php echo esc_js($product->get_name()); ?>',
-                        'item_category': '<?php echo esc_js($category_name); ?>',
-                        'price': '<?php echo esc_js($product->get_price()); ?>',
-                        'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>'
-                    }]
+                    'items': [<?php echo wp_json_encode($item); ?>]
                 },
                 'user_data': {
                     'email_hashed': '<?php echo esc_js($hashed_email); ?>',

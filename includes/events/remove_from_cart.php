@@ -22,18 +22,14 @@ function tggr_remove_from_cart_event($cart_item_key, $instance)
         return;
     }
 
+    $item = tggr_format_item($product->get_id(), $cart_item['quantity']);
+
     $tggr_event_data = array(
         'event'     => 'remove_from_cart',
         'ecommerce' => array(
             'currency' => get_woocommerce_currency(),
             'value' => floatval($product->get_price()),
-            'items'    => array(array(
-                'item_id'    => $product->get_id(),
-                'item_name'  => $product->get_name(),
-                'item_category' => $product->get_category(),
-                'quantity'   => 1,
-                'price'      => floatval($product->get_price()),
-            )),
+            'items'    => array($item),
             'user_data' => array(
                 'email_hashed' => $hashed_email,
                 'email' => $email
@@ -56,7 +52,7 @@ function tggr_print_remove_from_cart_script()
         return;
     }
 
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     if (isset($options['remove_from_cart']) && $options['remove_from_cart']) {
 ?>
         <script type="text/javascript">
@@ -83,7 +79,7 @@ function tggr_ajax_remove_from_cart_script()
         $hashed_email = hash('sha256', $current_user->user_email);
         $email = $current_user->user_email;
     }
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     if (isset($options['remove_from_cart']) && $options['remove_from_cart']) {
     ?>
         <script type="text/javascript">
@@ -133,6 +129,9 @@ function tggr_get_product_details_callback()
 {
     $product_id = 15;
     $product = wc_get_product($product_id);
+    if (!$product) {
+        wp_send_json_error('Product not found');
+    }
     $categories = wp_get_post_terms($product_id, 'product_cat');
     $category_names = array();
     foreach ($categories as $category) {

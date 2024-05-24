@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 function tggr_gtm_view_item_list()
 {
-    $options = get_option('wc_gtm_options');
+    $options = get_option('tggr_options');
     $current_user = wp_get_current_user();
     $hashed_email = '';
     $email = '';
@@ -18,12 +18,7 @@ function tggr_gtm_view_item_list()
             $products = [];
             foreach ($wp_query->posts as $post) {
                 $product = wc_get_product($post->ID);
-                $products[] = $products[] = [
-                    'item_id' => $product->get_id(),
-                    'item_name' => $product->get_name(),
-                    'price' => $product->get_price(),
-                    'item_category' => implode(', ', $product->get_category_ids()),
-                ];
+                $products[] = tggr_format_item($product->get_id());
             }
             $item_list_id = 'default_list_id';
             $item_list_name = 'Default List';
