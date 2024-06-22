@@ -75,6 +75,9 @@ We advise all users to review Google Tag Manager's Terms of Service and Privacy 
 
 == Changelog ==
 
+= 1.0.5 =
+- Removed unnecessary navigation tabs in admin page 
+
 = 1.0.4 =
 - Improved script robustness in the remove_from_cart event.
 
