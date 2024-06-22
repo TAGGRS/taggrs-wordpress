@@ -123,10 +123,6 @@ function tggr_options_page_html() {
     <div class="wrap">
         <?php $image_url = PLUGIN_PATH . 'includes/admin/images/taggrs-logo-blauw.png'; ?>
         <img src="<?php echo esc_url($image_url)  ?>" style="width: 250px; height: auto; margin-top: 25px; margin-bottom: 25px;"></img>
-        <h2 class="nav-tab-wrapper">
-            <a href="?page=wc-gtm-settings&tab=gtm" class="nav-tab <?php $active_tab == 'gtm' ? 'nav-tab-active' : ''; ?>">GTM Settings</a>
-            <a href="?page=wc-gtm-settings&tab=events" class="nav-tab <?php $active_tab == 'events' ? 'nav-tab-active' : ''; ?>">Events</a>
-        </h2>
 
         <div style="display: flex; justify-content: space-between;">
             <!-- Main Settings/Events Section -->
