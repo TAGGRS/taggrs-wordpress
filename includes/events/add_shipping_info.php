@@ -26,7 +26,7 @@ function tggr_add_shipping_info()
 
     if (isset($options['add_shipping_info']) && $options['add_shipping_info']) {
 ?>
-        <p><?php echo json_encode($cart->get_cart()); ?></p>
+    
         <script>
             window.dataLayer = window.dataLayer || [];
             dataLayer.push({
