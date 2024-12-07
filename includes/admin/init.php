@@ -270,7 +270,17 @@ function tggr_options_sanitize($input) {
         $data = fetch_container_data($id, $bearer_token);
 
         if ($data && isset($data['domain'])) {
-            $input['tggr_url'] = 'https://' . $data['domain'] . '/';
+            $domain = $data['domain'];
+            
+            if (!preg_match('/^https?:\/\//', $domain)) {
+                $domain = 'https://' . $domain;
+            }
+            
+            if (substr($domain, -1) !== '/') {
+                $domain .= '/';
+            }
+            
+            $input['tggr_url'] = $domain;
         }
     } else {
         $input['tggr_url'] = 'https://googletagmanager.com/';
