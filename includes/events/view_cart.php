@@ -20,7 +20,11 @@ function tggr_gtm_view_cart()
             $total_value = 0;
             foreach ($cart as $cart_item) {
                 $product = $cart_item['data'];
-                $item_total = $product->get_price() * $cart_item['quantity'];
+                $price = $product->get_price();
+                $qty = $cart_item['quantity'];
+                if (!is_numeric($price)) $price = 0;
+                if (!is_numeric($qty)) $qty = 0;
+                $item_total = (float) $price * (float) $qty;
                 $categories = wp_get_post_terms($product->get_id(), 'product_cat', array('fields' => 'names'));
                 $category_list = implode(', ', $categories);
 
