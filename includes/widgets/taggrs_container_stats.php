@@ -23,13 +23,13 @@ function tggr_dashboard_widget_content() {
     ?>
     <div class="postbox">
         <div class="inside">
-            <p><strong>Containername:</strong> <?php echo esc_js($container_name); ?></p>
-            <p><strong>Tagging URL:</strong> <?php echo esc_html($tagging_url); ?></p>
-            <p><strong>Plan:</strong> <span class="wc-gtm-plan-badge-<?php echo esc_js($plan_number); ?>"><?php echo esc_js($plan); ?></span></p>
+            <p><strong>Containername:</strong> <?php echo esc_js($container_name ? $container_name : 'Unknown'); ?></p>
+            <p><strong>Tagging URL:</strong> <?php echo esc_html($tagging_url ? $tagging_url : 'Unknown'); ?></p>
+            <p><strong>Plan:</strong> <span class="wc-gtm-plan-badge-<?php echo esc_js($plan_number); ?>"><?php echo esc_js($plan ? $plan : 'Unknown'); ?></span></p>
             <p><strong>Request Limit:</strong></p>
             <div style="background-color: #f5f5f5; border: 1px solid #ccc; height: 20px; width: 100%; position: relative;">
-                <div style="width: <?php echo esc_js($percentage); ?>%; background-color: #0073aa; height: 100%;"></div>
-                <span style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); color: #555;"><?php echo esc_js($requests); ?> / <?php echo esc_js($request_limit); ?></span>
+                <div style="width: <?php echo esc_js($percentage ? $percentage : '0'); ?>%; background-color: #0073aa; height: 100%;"></div>
+                <span style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); color: #bbb;"><?php echo esc_js($requests ? $requests : '0'); ?> / <?php echo esc_js($request_limit ? $request_limit : '0'); ?></span>
             </div>
         </div>
     </div>

@@ -1,47 +1,62 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-function tggr_begin_checkout()
-{
+function tggr_begin_checkout_event() {
     $options = get_option('tggr_options');
     $current_user = wp_get_current_user();
     $hashed_email = '';
+    $email = '';
+
     if ($current_user->exists()) {
-        $hashed_email = hash('sha256', $current_user->user_email);
+        $hashed_email = tggr_hash_email($current_user->user_email);
+        $email = $current_user->user_email;
     }
 
     if (isset($options['begin_checkout']) && $options['begin_checkout']) {
         $cart = WC()->cart;
         $items = tggr_format_cart_items($cart);
-
-        // Totaalwaarde van de winkelwagen
         $cart_total = $cart->cart_contents_total;
-
-        // Voeg hier de logica toe om de gebruikte couponcode op te halen, indien aanwezig
         $applied_coupons = $cart->get_applied_coupons();
         $coupon_code = !empty($applied_coupons) ? $applied_coupons[0] : '';
 
-?>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            dataLayer.push({
-                'event': 'begin_checkout',
-                'ecommerce': {
-                    'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>', // Voeg de valuta toe
-                    'value': <?php echo esc_js($cart_total); ?>, // Totaalwaarde van de winkelwagen
-                    'coupon': '<?php echo esc_js($coupon_code); ?>', // Gebruikte couponcode
-                    'items': <?php echo wp_json_encode($items); ?>
-                },
-                'user_data': {
-                    'email_hashed': '<?php echo esc_js($hashed_email); ?>',
-                    'email': '<?php echo esc_js($current_user->user_email); ?>'
+        $checkout_data = array(
+            'event' => 'begin_checkout',
+            'ecommerce' => array(
+                'currency' => get_woocommerce_currency(),
+                'value' => floatval($cart_total),
+                'coupon' => $coupon_code,
+                'items' => $items,
+                'user_data' => array(
+                    'email_hashed' => $hashed_email,
+                    'email' => $email
+                )
+            )
+        );
+
+        wp_register_script('ga4-begin-checkout', false);
+        wp_enqueue_script('ga4-begin-checkout');
+        wp_add_inline_script('ga4-begin-checkout', 'window.ga4CheckoutData = ' . wp_json_encode($checkout_data) . ';', 'before');
+    }
+}
+add_action('woocommerce_before_checkout_form', 'tggr_begin_checkout_event');
+
+function tggr_print_checkout_script() {
+    if (!wp_script_is('ga4-begin-checkout', 'enqueued')) {
+        return;
+    }
+
+    $options = get_option('tggr_options');
+    if (isset($options['begin_checkout']) && $options['begin_checkout']) {
+        ?>
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function() {
+                if (window.ga4CheckoutData) {
+                    window.dataLayer = window.dataLayer || [];
+                    window.dataLayer.push(window.ga4CheckoutData);
                 }
             });
         </script>
-
-<?php
+        <?php
     }
 }
-
-add_action('woocommerce_before_checkout_form', 'tggr_begin_checkout');
-?>
+add_action('wp_footer', 'tggr_print_checkout_script');
