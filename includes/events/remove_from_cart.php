@@ -85,9 +85,9 @@ function tggr_ajax_remove_from_cart_script()
     if (isset($options['remove_from_cart']) && $options['remove_from_cart']) {
         ?>
         <script type="text/javascript">
-            document.body.addEventListener('click', function(e) {
-                console.log('Clicked element:', e.target);
-            });
+            // document.body.addEventListener('click', function(e) {
+            //     console.log('Clicked element:', e.target);
+            // });
 
             jQuery(document).on('click', '.remove', function(e) {
                 e.preventDefault(); // Prevent the default action so the page doesn't navigate immediately
