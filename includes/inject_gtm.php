@@ -7,6 +7,9 @@ function tggr_inject_gtm_script()
     $gtm_code = get_option('tggr_code', '');
     $gtm_options = get_option('tggr_options', array());
 
+	if(empty($gtm_code))
+		return;
+
     // Check if the option isn't an array or if it doesn't contain the expected key.
     if (!is_array($gtm_options) || !isset($gtm_options['tggr_url_toggle']) || $gtm_options['tggr_url_toggle'] == '') {
         $gtm_url = 'googletagmanager.com'; // Default value
@@ -42,6 +45,11 @@ function tggr_inject_gtm_noscript()
 {
     $gtm_code = get_option('tggr_code', '');
     $gtm_options = get_option('tggr_options', array());
+
+
+	if(empty($gtm_code))
+		return;
+	
     if (!is_array($gtm_options) || !isset($gtm_options['tggr_url_toggle']) || $gtm_options['tggr_url_toggle'] == '') {
         $gtm_url = 'googletagmanager.com'; // Default value
     } else {
