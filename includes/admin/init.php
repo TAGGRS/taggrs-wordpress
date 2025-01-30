@@ -251,7 +251,7 @@ function tggr_admin_notices() {
 add_action('admin_notices', 'tggr_admin_notices');
 
 function tggr_code_sanitize($input) {
-    if (strpos($input, 'GTM-') !== 0) { // If the input doesn't start with 'GTM-'
+    if (!empty($input) && strpos($input, 'GTM-') !== 0) { // If the input doesn't start with 'GTM-'
         set_transient('tggr_settings_error', 'The GTM Code must start with "GTM-".', 45);
         return get_option('tggr_code'); // Return the old value
     }
@@ -259,7 +259,6 @@ function tggr_code_sanitize($input) {
 }
 
 function tggr_events_sanitize($input) {
-
     return $input;
 }
 
