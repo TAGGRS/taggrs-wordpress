@@ -120,6 +120,7 @@ function tggr_options_page_html() {
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
     </style>
+    <script src="<?php echo plugins_url('/admin.js', __FILE__); ?>"></script>
     <div class="wrap">
         <?php $image_url = PLUGIN_PATH . 'includes/admin/images/taggrs-logo-blauw.png'; ?>
         <img src="<?php echo esc_url($image_url)  ?>" style="width: 250px; height: auto; margin-top: 25px; margin-bottom: 25px;"></img>
@@ -129,7 +130,7 @@ function tggr_options_page_html() {
             <div style="flex: 70%; max-width: 70%; padding-right: 2%;">
                 <div class="postbox">
                     <div class="inside">
-                        <form action="options.php" method="post">
+                        <form action="options.php" method="post" id="taggrs-options-form">
                             <?php
                             settings_fields('tggr'); // This registers nonces etc. for the page
 
@@ -283,6 +284,19 @@ function tggr_options_sanitize($input) {
         }
     } else {
         $input['tggr_url'] = 'https://googletagmanager.com/';
+
+        $input['enhanced_tracking_v2'] = 0;
+        $input['enhanced_tracking_v2_container_id'] = '';
+    }
+
+    if (!empty($input['enhanced_tracking_v2']) && empty($input['enhanced_tracking_v2_container_id'])) {
+        add_settings_error(
+            'tggr_options',
+            'enhanced_tracking_v2_container_id',
+            'Container Identifier is verplicht wanneer Enhanced Tracking v2 is ingeschakeld.',
+            'error'
+        );
+        $input['enhanced_tracking_v2'] = 0; // Schakel uit om fouten te voorkomen
     }
 
     return $input;
@@ -291,7 +305,7 @@ function tggr_options_sanitize($input) {
 
 function tggr_success_message($old_value, $value, $option) {
     if ($old_value !== $value) { // Only show if the value has changed.
-        add_settings_error('tggr_messages', 'tggr_message', 'Settings Saved', 'updated');
+        add_settings_error('tggr_messages', 'tggr_message', 'Settings saved', 'updated');
     }
 }
 add_action('update_option_tggr_code', 'tggr_success_message', 10, 3);
@@ -330,7 +344,28 @@ function tggr_url_toggle_cb() {
     echo ( '<input type="text" id="tggr_url_toggle" name="tggr_options[tggr_url_toggle]" style="width:350px; " value="' . esc_attr($value) . '" />' );
     echo ( '<p class="description">Read <a href="https://taggrs.io/en/enhanced-tracking-script/">this article</a> to find out how to use the Enhanced Tracking Script</p>' );
     echo ( '<p class="description"><i>If you do not want to use the Enhanced Tracking Script, leave this field empty</i></p>' );
+}
 
+function tggr_enhanced_tracking_v2_cb($args) {
+    $options = get_option('tggr_options');
+    $disabled = !isset($options['tggr_url_toggle']) || $options['tggr_url_toggle'] == '';
+    $v2_active = isset($options['enhanced_tracking_v2']) ? checked($options['enhanced_tracking_v2'], 1, false) : '';
+    $container_id = isset($options['enhanced_tracking_v2_container_id']) ? $options['enhanced_tracking_v2_container_id'] : '';
+
+    echo '<div id="enhanced_tracking_v2_section" style="' . ($disabled ? 'opacity: 0.7;' : '') . '">';
+    
+    // Toggle
+    echo "<div style='display:flex; gap: 6px;'>";
+    echo ("<input style='margin-top: 7px;' name='tggr_options[enhanced_tracking_v2]' " . ($disabled ? 'disabled' : '') . " type='checkbox' id='tggr_enhanced_tracking_v2' value='1' " . esc_attr($v2_active) . ">");
+    echo '<p class="description"><b>Enable</b></p>';
+    echo "</div>";
+
+    // Container ID
+    echo '<p class="description" style="margin-top: 10px;"><b>Container identifier</b></p>';
+    echo '<input type="text" id="enhanced_tracking_v2_container_id" name="tggr_options[enhanced_tracking_v2_container_id]" ' . ($disabled ? 'disabled' : "") . ' style="width:350px;" value="' . esc_attr($container_id) . '" />';
+    
+    echo '</div>';
+    echo '<p class="description"><i>The Enhanced Tracking Script v2 can only be used when you have entered a subdomain for the Enhanced Tracking Script.</i></p>';
 }
 
 
@@ -366,6 +401,14 @@ function tggr_settings_init() {
         'tggr_section_gtm'
     );
 
+    // Add field for Enhanced Tracking Script v2
+    add_settings_field(
+        'tggr_enhanced_tracking_v2',
+        'Enhanced Tracking Script v2',
+        'tggr_enhanced_tracking_v2_cb',
+        'wc-gtm-settings',
+        'tggr_section_gtm'
+    );
 
     // Register a new setting for our options page for the events.
     register_setting('tggr', 'tggr_options');
