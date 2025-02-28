@@ -11,7 +11,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	errorMessage.style.color = 'red';
 	errorMessage.style.fontSize = '12px';
 	errorMessage.style.marginTop = '5px';
-	errorMessage.textContent = 'To enable Enhanced Tracking v2, it is required to supply a container identifier.';
+	errorMessage.textContent = 'To enable Enhanced Tracking v2, it is required to supply a TAGGRS Container Identifier.';
 	errorMessage.style.display = 'none';
 	containerIdField.insertAdjacentElement( 'afterend', errorMessage );
 

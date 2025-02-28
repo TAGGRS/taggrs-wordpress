@@ -290,13 +290,7 @@ function tggr_options_sanitize($input) {
     }
 
     if (!empty($input['enhanced_tracking_v2']) && empty($input['enhanced_tracking_v2_container_id'])) {
-        add_settings_error(
-            'tggr_options',
-            'enhanced_tracking_v2_container_id',
-            'Container Identifier is verplicht wanneer Enhanced Tracking v2 is ingeschakeld.',
-            'error'
-        );
-        $input['enhanced_tracking_v2'] = 0; // Schakel uit om fouten te voorkomen
+        $input['enhanced_tracking_v2'] = 0;
     }
 
     return $input;
@@ -360,8 +354,8 @@ function tggr_enhanced_tracking_v2_cb($args) {
     echo '<p class="description"><b>Enable</b></p>';
     echo "</div>";
 
-    // Container ID
-    echo '<p class="description" style="margin-top: 10px;"><b>Container identifier</b></p>';
+    // TAGGRS Container Identifier
+    echo '<p class="description" style="margin-top: 10px;"><b>TAGGRS Container Identifier</b></p>';
     echo '<input type="text" id="enhanced_tracking_v2_container_id" name="tggr_options[enhanced_tracking_v2_container_id]" ' . ($disabled ? 'disabled' : "") . ' style="width:350px;" value="' . esc_attr($container_id) . '" />';
     
     echo '</div>';
