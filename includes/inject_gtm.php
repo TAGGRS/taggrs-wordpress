@@ -27,6 +27,7 @@ function tggr_inject_gtm_script()
     if (isset($gtm_options['enhanced_tracking_v2']) && $gtm_options['enhanced_tracking_v2']) {
         $container_id = $gtm_options['enhanced_tracking_v2_container_id'];
         $gtm_url = $gtm_url . "/$container_id.js";
+        $gtm_code = str_replace('GTM-', '', $gtm_code);
     } else {
         $gtm_url = $gtm_url . '/gtm.js';
     }
@@ -78,6 +79,7 @@ function tggr_inject_gtm_noscript()
     if (isset($gtm_options['enhanced_tracking_v2']) && $gtm_options['enhanced_tracking_v2']) {
         $container_id = $gtm_options['enhanced_tracking_v2_container_id'];
         $gtm_url = $gtm_url . "/$container_id.html";
+        $gtm_code = str_replace('GTM-', '', $gtm_code);
     } else {
         $gtm_url = $gtm_url . '/ns.html';
     }
