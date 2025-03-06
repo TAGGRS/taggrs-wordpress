@@ -76,10 +76,12 @@ function tggr_inject_gtm_noscript()
     }
     $gtm_url = rtrim($gtm_url, '/');
 
+    $parameter = "id";
     if (isset($gtm_options['enhanced_tracking_v2']) && $gtm_options['enhanced_tracking_v2']) {
         $container_id = $gtm_options['enhanced_tracking_v2_container_id'];
         $gtm_url = $gtm_url . "/$container_id.html";
         $gtm_code = str_replace('GTM-', '', $gtm_code);
+        $parameter = "tg";
     } else {
         $gtm_url = $gtm_url . '/ns.html';
     }
@@ -89,7 +91,7 @@ function tggr_inject_gtm_noscript()
     //        $bearer_token = '1|hUgtpWxPz17M0WC023NlLZhmM5EMGnaTKFsw70nr';  // Again, fetch this securely.
     //        $data = fetch_container_data($id, $bearer_token);
     echo  "<!-- Server Side Tagging by TAGGRS (noscript) -->
-    <noscript><iframe src='" . esc_js($gtm_url) . "?id=" . esc_js($gtm_code) . "'
+    <noscript><iframe src='" . esc_js($gtm_url) . "?$parameter=" . esc_js($gtm_code) . "'
                       height='0' width='0' style='display:none;visibility:hidden'></iframe></noscript>
     <!-- End Server Side Tagging by TAGGRS (noscript) -->";
     //    } else if (!empty($gtm_code) && !empty($gtm_url)) {
