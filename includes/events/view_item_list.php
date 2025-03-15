@@ -18,7 +18,9 @@ function tggr_gtm_view_item_list()
             $products = [];
             foreach ($wp_query->posts as $post) {
                 $product = wc_get_product($post->ID);
-                $products[] = tggr_format_item($product->get_id());
+                if ($product) {
+                    $products[] = tggr_format_item($product->get_id());
+                }
             }
             $item_list_id = 'default_list_id';
             $item_list_name = 'Default List';
