@@ -3,7 +3,7 @@ Contributors: TAGGRS
 Tags: woocommerce, google analytics, ga4, server-side tracking, e-commerce analytics, enhanced conversions, user data, taggrs, server side tracking, server side tagging, google ads, conversion api, capi
 Requires at least: 4.5
 Tested up to: 6.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
