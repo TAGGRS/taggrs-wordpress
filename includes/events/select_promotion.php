@@ -15,6 +15,10 @@ function tggr_select_promotion($coupon_code)
     if (isset($options['select_promotion']) && $options['select_promotion']) {
         $cart_items = WC()->cart->get_cart();
         $items = array();
+        
+        $item_list_id = 'default_list_id';
+        $item_list_name = 'Default List';
+
         foreach ($cart_items as $cart_item_key => $cart_item) {
             $product_id = $cart_item['product_id'];
             $product = wc_get_product($product_id);
