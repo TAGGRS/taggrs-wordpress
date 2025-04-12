@@ -7,8 +7,10 @@ function tggr_select_promotion($coupon_code)
     $coupon = new WC_Coupon($coupon_code);
 
     $current_user = wp_get_current_user();
+    $email = '';
     $hashed_email = '';
     if ($current_user->exists()) {
+        $email = $current_user->user_email;
         $hashed_email = hash('sha256', $current_user->user_email);
     }
 
@@ -42,7 +44,7 @@ function tggr_select_promotion($coupon_code)
                 },
                 'user_data': {
                     'email_hashed': '<?php echo esc_js($hashed_email); ?>',
-                    'email': '<?php echo esc_js($current_user->user_email); ?>'
+                    'email': '<?php echo esc_js($email); ?>'
                 }
             });
         </script>
