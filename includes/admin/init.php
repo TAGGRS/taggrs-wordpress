@@ -41,22 +41,6 @@ function tggr_options_page_html() {
 
     settings_errors('tggr_messages');
 
-    // Container details for the new block
-    $id = '9';  // Replace with your actual container ID or fetch it dynamically
-    $bearer_token = '9';  // This should ideally be kept secret, stored securely, or fetched dynamically
-
-    $data = fetch_container_data($id, $bearer_token);
-
-    if ($data) {
-        $container_name = $data['custom_name'];
-        $requests = $data['requests'];
-        $request_limit = get_request_limit($data['plan']);
-        $tagging_url = $data['domain'];
-        $plan = get_plan_name($data['plan']);
-        $plan_number = $data['plan'];
-        $percentage = ($requests / $request_limit) * 100;
-    }
-
     // Select tab, can be: gtm, events
     $active_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'gtm';
     switch($active_tab):
@@ -199,49 +183,6 @@ function tggr_admin_scripts($hook) {
 }
 add_action('admin_enqueue_scripts', 'tggr_admin_scripts');
 
-
-function fetch_container_data($id, $bearer_token) {
-    $url = 'https://dev.taggrs.io/api/v1/integration/containerinfo/' . $id;
-
-    $response = wp_remote_get($url, array(
-        'headers' => array(
-            'Authorization' => 'Bearer ' . $bearer_token
-        )
-    ));
-
-    if (is_wp_error($response)) {
-        // Handle the error accordingly
-        return false;
-    }
-
-    $body = wp_remote_retrieve_body($response);
-    $data = json_decode($body, true);
-
-    return $data;
-}
-
-function get_plan_name($plan_number) {
-    $plans = array(
-        0 => 'Free',
-        1 => 'Basic',
-        2 => 'Pro+',
-        3 => 'Ultimate'
-    );
-
-    return isset($plans[$plan_number]) ? $plans[$plan_number] : 'Unknown';
-}
-
-function get_request_limit($plan_number) {
-    $plans = array(
-        0 => 10000,
-        1 => 750000,
-        2 => 3000000,
-        3 => 10000000
-    );
-
-    return isset($plans[$plan_number]) ? $plans[$plan_number] : 'Unknown';
-}
-
 function tggr_admin_notices() {
     if ($error = get_transient('tggr_settings_error')) {
         echo esc_html('<div class="error"><p>' . $error . '</p></div>');
@@ -264,30 +205,10 @@ function tggr_events_sanitize($input) {
 }
 
 function tggr_options_sanitize($input) {
-    if (isset($input['tggr_url_toggle']) && $input['tggr_url_toggle'] == 'on') {
-        $id = '9';  // Fetch the ID from wherever you have it.
-        $bearer_token = '9';  // Again, fetch this securely.
-        $data = fetch_container_data($id, $bearer_token);
+    $input['tggr_url'] = 'https://googletagmanager.com/';
 
-        if ($data && isset($data['domain'])) {
-            $domain = $data['domain'];
-            
-            if (!preg_match('/^https?:\/\//', $domain)) {
-                $domain = 'https://' . $domain;
-            }
-            
-            if (substr($domain, -1) !== '/') {
-                $domain .= '/';
-            }
-            
-            $input['tggr_url'] = $domain;
-        }
-    } else {
-        $input['tggr_url'] = 'https://googletagmanager.com/';
-
-        $input['enhanced_tracking_v2'] = 0;
-        $input['enhanced_tracking_v2_container_id'] = '';
-    }
+    $input['enhanced_tracking_v2'] = 0;
+    $input['enhanced_tracking_v2_container_id'] = '';
 
     if (!empty($input['enhanced_tracking_v2']) && empty($input['enhanced_tracking_v2_container_id'])) {
         $input['enhanced_tracking_v2'] = 0;

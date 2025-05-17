@@ -20,9 +20,6 @@ add_action('wp_enqueue_scripts', 'tggr_enqueue_jquery');
 // Constant plugin path
 define('PLUGIN_PATH', plugin_dir_url( __FILE__ ));
 
-// Widgets
-require_once plugin_dir_path(__FILE__) . 'includes/widgets/taggrs_container_stats.php';
-
 // admin Page
 require_once plugin_dir_path(__FILE__) . 'includes/admin/init.php';
 
