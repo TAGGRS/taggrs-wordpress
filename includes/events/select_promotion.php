@@ -1,57 +1,70 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-function tggr_select_promotion($coupon_code)
+function tggr_select_promotion_event()
 {
     $options = get_option('tggr_options');
-    $coupon = new WC_Coupon($coupon_code);
+    if (!isset($options['select_promotion']) || !$options['select_promotion']) {
+        return;
+    }
 
     $current_user = wp_get_current_user();
-    $email = '';
-    $hashed_email = '';
-    if ($current_user->exists()) {
-        $email = $current_user->user_email;
-        $hashed_email = hash('sha256', $current_user->user_email);
-    }
-
-    if (isset($options['select_promotion']) && $options['select_promotion']) {
-        $cart_items = WC()->cart->get_cart();
-        $items = array();
-        
-        $item_list_id = 'default_list_id';
-        $item_list_name = 'Default List';
-
-        foreach ($cart_items as $cart_item_key => $cart_item) {
-            $product_id = $cart_item['product_id'];
-            $product = wc_get_product($product_id);
-            $discount_amount = 0;
-
-            // Voeg logica toe om de korting voor dit specifieke item te berekenen
-            // Dit hangt af van hoe je kortingen configureert in WooCommerce
-
-            $items[] = tggr_format_item($product_id, $cart_item['quantity']);
-        }
-
-?>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            dataLayer.push({
-                'event': 'select_item',
-                'ecommerce': {
-                    'item_list_id': '<?php echo esc_js($item_list_id); ?>',
-                    'item_list_name': '<?php echo esc_js($item_list_name); ?>',
-                    'items': <?php echo wp_json_encode($items); ?>
-                },
-                'user_data': {
-                    'email_hashed': '<?php echo esc_js($hashed_email); ?>',
-                    'email': '<?php echo esc_js($email); ?>'
-                }
-            });
-        </script>
-
-<?php
-    }
+    $email = $current_user->exists() ? $current_user->user_email : '';
+    $hashed_email = $email ? tggr_hash_email($email) : '';
+   
+    $event_data = array(
+        'event' => 'select_promotion',
+        'ecommerce' => array(
+            'item_list_id' => 'cart',
+            'item_list_name' => 'Shopping Cart',
+        ),
+        'user_data' => array(
+            'email_hashed' => $hashed_email,
+            'email' => $email
+        )
+    );
+   
+    $cookie_value = base64_encode(wp_json_encode($event_data));
+    setcookie('tggr_promotion_data', $cookie_value, time() + 300, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), false);
 }
+add_action('woocommerce_applied_coupon', 'tggr_select_promotion_event');
 
-add_action('woocommerce_applied_coupon', 'tggr_select_promotion');
+
+function tggr_print_promotion_script()
+{
+    $options = get_option('tggr_options');
+    if (!isset($options['select_promotion']) || !$options['select_promotion']) {
+        return;
+    }
+    ?>
+    <script>
+        jQuery(document).ready(function($) {
+            function pushPromotionData() {
+                var cookieValue = document.cookie.split('; ').find(row => row.startsWith('tggr_promotion_data='));
+                if (cookieValue) {
+                    try {
+                        var data = JSON.parse(atob(decodeURIComponent(cookieValue.split('=')[1])));
+                        window.dataLayer = window.dataLayer || [];
+                        window.dataLayer.push(data);
+                        
+                        // Delete cookie after pushing data
+                        document.cookie = "tggr_promotion_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo COOKIEPATH; ?>; domain=<?php echo COOKIE_DOMAIN; ?>";
+                    } catch(e) {
+                        console.error('Promotion data error:', e);
+                    }
+                }
+            }
+            
+            // Check on load (for non AJAX calls)
+            pushPromotionData();
+            
+            // Check after updates (for AJAX calls)
+            $(document.body).on('updated_wc_div applied_coupon fkcart_fragments_refreshed', function() {
+                setTimeout(pushPromotionData, 500);
+            });
+        });
+    </script>
+    <?php
+}
+add_action('wp_footer', 'tggr_print_promotion_script');
 ?>
