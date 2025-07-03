@@ -112,7 +112,6 @@ function tggr_options_page_html() {
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
     </style>
-    <script src="<?php echo plugins_url('/admin.js', __FILE__); ?>"></script>
     <div class="wrap">
         <?php 
         $image_url = PLUGIN_PATH . 'includes/admin/images/taggrs-logo-blauw.png';
@@ -203,10 +202,10 @@ function tggr_get_defaults() {
 add_filter('default_option_tggr_options', 'tggr_get_defaults');
 
 function tggr_admin_scripts($hook) {
-    if ('settings_page_wc-gtm-settings' != $hook) {
+    if ('toplevel_page_wc-gtm-settings' != $hook) {
         return;
     }
-    wp_enqueue_script('wc-gtm-admin', plugins_url('/admin.js', __FILE__), array('jquery'), '1.0.0', true);
+    wp_enqueue_script('wc-gtm-admin', plugins_url('../../js/admin.js', __FILE__), array('jquery'), '1.0.0', true);
 }
 add_action('admin_enqueue_scripts', 'tggr_admin_scripts');
 
