@@ -112,6 +112,7 @@ function tggr_options_page_html() {
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
     </style>
+    <script src="<?php echo plugins_url('/admin.js', __FILE__); ?>"></script>
     <div class="wrap">
         <?php 
         $image_url = PLUGIN_PATH . 'includes/admin/images/taggrs-logo-blauw.png';
