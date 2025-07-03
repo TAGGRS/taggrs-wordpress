@@ -52,7 +52,7 @@ function tggr_print_add_to_cart_script()
                         window.dataLayer.push(data);
                         
                         // Delete cookie after pushing data
-                        document.cookie = "tggr_add_to_cart_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo COOKIEPATH; ?>; domain=<?php echo COOKIE_DOMAIN; ?>";
+                        document.cookie = "tggr_add_to_cart_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo esc_js(COOKIEPATH); ?>; domain=<?php echo esc_js(COOKIE_DOMAIN); ?>";
                     } catch(e) {
                         console.error('Add to cart data error:', e);
                     }

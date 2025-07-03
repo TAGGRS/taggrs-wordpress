@@ -33,7 +33,7 @@ function tggr_begin_checkout_event() {
             )
         );
 
-        wp_register_script('ga4-begin-checkout', false);
+        wp_register_script('ga4-begin-checkout', false, array(), '1.0.0', true);
         wp_enqueue_script('ga4-begin-checkout');
         wp_add_inline_script('ga4-begin-checkout', 'window.ga4CheckoutData = ' . wp_json_encode($checkout_data) . ';', 'before');
     }

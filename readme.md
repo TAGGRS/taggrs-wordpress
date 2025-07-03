@@ -1,10 +1,10 @@
-# TAGGRS Server-Side Integration
+# TAGGRS - Server Side Tracking
 **Integrate Google Analytics 4 (GA4) with server-side capabilities into your WooCommerce store for enhanced e-commerce analytics and user behavior tracking**.
 ## Summary
 
  - Requires at least: WordPress 4.5
- - Tested up to: WordPress 6.4
- - Stable tag: 1.1.6
+ - Tested up to: WordPress 6.8
+ - Stable tag: 1.1.7
  - Requires PHP: 7.2
  - License: GPLv2 or later
  - License URI: https://www.gnu.org/licenses/gpl-2.0.html

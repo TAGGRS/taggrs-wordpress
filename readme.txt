@@ -1,14 +1,14 @@
-=== TAGGRS Server-Side Integration ===
+=== TAGGRS - Server Side Tracking ===
 Contributors: TAGGRS
-Tags: woocommerce, google analytics, ga4, server-side tracking, e-commerce analytics, enhanced conversions, user data, taggrs, server side tracking, server side tagging, google ads, conversion api, capi
+Tags: woocommerce, google analytics, ga4, server-side tracking, analytics
 Requires at least: 4.5
-Tested up to: 6.4
-Stable tag: 1.1.6
+Tested up to: 6.8
+Stable tag: 1.1.7
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Integrate Google Analytics 4 (GA4) with server-side capabilities into your WooCommerce store for enhanced e-commerce analytics and user behavior tracking.
+Integrate Google Analytics 4 (GA4) with server-side tracking into your WooCommerce store for enhanced e-commerce analytics.
 
 == Description ==
 

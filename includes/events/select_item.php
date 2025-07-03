@@ -75,7 +75,7 @@ function tggr_print_select_item_script()
                         window.dataLayer = window.dataLayer || [];
                         window.dataLayer.push(data);
                         // Delete cookie after pushing data
-                        document.cookie = "tggr_select_item_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo COOKIEPATH; ?>; domain=<?php echo COOKIE_DOMAIN; ?>";
+                        document.cookie = "tggr_select_item_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo esc_js(COOKIEPATH); ?>; domain=<?php echo esc_js(COOKIE_DOMAIN); ?>";
                     } catch (e) {
                         console.error('Select item data error:', e);
                     }

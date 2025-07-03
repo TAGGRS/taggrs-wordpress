@@ -42,7 +42,15 @@ function tggr_options_page_html() {
     settings_errors('tggr_messages');
 
     // Select tab, can be: gtm, events
-    $active_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'gtm';
+    $active_tab = 'gtm'; // Default tab
+    
+    // Only process tab parameter if it's a valid value
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Simple tab switching in admin area
+    if (isset($_GET['tab']) && in_array($_GET['tab'], ['gtm', 'events'], true)) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Tab parameter validation for admin UI
+        $active_tab = sanitize_key($_GET['tab']);
+    }
+    
     switch($active_tab):
         case 'gtm':
         case 'events':
@@ -104,10 +112,28 @@ function tggr_options_page_html() {
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
     </style>
-    <script src="<?php echo plugins_url('/admin.js', __FILE__); ?>"></script>
     <div class="wrap">
-        <?php $image_url = PLUGIN_PATH . 'includes/admin/images/taggrs-logo-blauw.png'; ?>
-        <img src="<?php echo esc_url($image_url)  ?>" style="width: 250px; height: auto; margin-top: 25px; margin-bottom: 25px;"></img>
+        <?php 
+        $image_url = PLUGIN_PATH . 'includes/admin/images/taggrs-logo-blauw.png';
+        // Plugin logo for admin interface - not using wp_get_attachment_image as this is a bundled asset
+        // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage -- Plugin bundled logo asset
+        // phpcs:disable PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+        echo wp_kses(
+            sprintf(
+                '<img src="%s" alt="%s" style="width: 250px; height: auto; margin-top: 25px; margin-bottom: 25px;" />',
+                esc_url($image_url),
+                esc_attr__('TAGGRS Logo', 'taggrs-datalayer')
+            ),
+            array(
+                'img' => array(
+                    'src' => array(),
+                    'alt' => array(),
+                    'style' => array(),
+                )
+            )
+        );
+        // phpcs:enable PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
+        ?>
 
         <div style="display: flex; justify-content: space-between;">
             <!-- Main Settings/Events Section -->
@@ -176,10 +202,10 @@ function tggr_get_defaults() {
 add_filter('default_option_tggr_options', 'tggr_get_defaults');
 
 function tggr_admin_scripts($hook) {
-    if ('settings_page_wc-gtm-settings' != $hook) {
+    if ('toplevel_page_wc-gtm-settings' != $hook) {
         return;
     }
-    wp_enqueue_script('wc-gtm-admin', plugins_url('/js/admin.js', __FILE__), array('jquery'), null, true);
+    wp_enqueue_script('wc-gtm-admin', plugins_url('../../js/admin.js', __FILE__), array('jquery'), '1.0.0', true);
 }
 add_action('admin_enqueue_scripts', 'tggr_admin_scripts');
 
@@ -326,7 +352,7 @@ function tggr_settings_init() {
     );
 
     // Register a new setting for our options page for the events.
-    register_setting('tggr', 'tggr_options');
+    register_setting('tggr', 'tggr_options', array('sanitize_callback' => 'tggr_options_sanitize'));
 
 
     // Add a new section to our options page for the events.

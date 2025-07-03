@@ -48,7 +48,7 @@ function tggr_print_promotion_script()
                         window.dataLayer.push(data);
                         
                         // Delete cookie after pushing data
-                        document.cookie = "tggr_promotion_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo COOKIEPATH; ?>; domain=<?php echo COOKIE_DOMAIN; ?>";
+                        document.cookie = "tggr_promotion_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo esc_js(COOKIEPATH); ?>; domain=<?php echo esc_js(COOKIE_DOMAIN); ?>";
                     } catch(e) {
                         console.error('Promotion data error:', e);
                     }
