@@ -44,7 +44,7 @@ function tggr_remove_from_cart_event($cart_item_key, $instance)
     );
 
     // Enqueue the data as an inline script
-    wp_register_script('ga4-remove-from-cart', false);
+    wp_register_script('ga4-remove-from-cart', false, array(), '1.0.0', true);
     wp_enqueue_script('ga4-remove-from-cart');
     wp_add_inline_script('ga4-remove-from-cart', 'window.ga4RemoveFromCartData = ' . wp_json_encode($tggr_event_data) . ';', 'before');
 }
@@ -83,6 +83,7 @@ function tggr_ajax_remove_from_cart_script()
     }
     $options = get_option('tggr_options');
     if (isset($options['remove_from_cart']) && $options['remove_from_cart']) {
+        $nonce = wp_create_nonce('tggr_get_product_details');
         ?>
         <script type="text/javascript">
             // document.body.addEventListener('click', function(e) {
@@ -104,7 +105,8 @@ function tggr_ajax_remove_from_cart_script()
                     type: 'POST',
                     data: {
                         action: 'get_product_details', // The WordPress action
-                        product_id: product_id
+                        product_id: product_id,
+                        nonce: '<?php echo esc_js($nonce); ?>'
                     },
                     success: function(response) {
                         if (response && response.success) {
@@ -139,6 +141,12 @@ add_action('wp_footer', 'tggr_ajax_remove_from_cart_script');
 
 function tggr_get_product_details_callback()
 {
+    // Verify nonce for security
+    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+    if (!$nonce || !wp_verify_nonce($nonce, 'tggr_get_product_details')) {
+        wp_send_json_error('Security check failed');
+    }
+
     // Validate and sanitize the product ID
     if (!isset($_POST['product_id']) || !is_numeric($_POST['product_id'])) {
         wp_send_json_error('Invalid product ID');
