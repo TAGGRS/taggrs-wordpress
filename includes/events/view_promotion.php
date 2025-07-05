@@ -13,8 +13,7 @@ function tggr_view_promotion()
     }
 
     if (isset($options['view_promotion']) && $options['view_promotion']) {
-        // Veronderstelt dat er een manier is om de getoonde promoties op te halen
-        $promotions = []; // Hier moet een logica komen om promoties op te halen
+        $promotions = [];
         $promotion_items = [];
 
         foreach ($promotions as $promotion) {
@@ -34,7 +33,6 @@ function tggr_view_promotion()
                 $promotion_amount = $coupon->get_amount();
             }
             
-            // Voeg logica toe om andere relevante informatie over de promotie te verzamelen indien nodig
             $promotion_data = array(
                 'item_id' => $promotion_id,
                 'item_name' => $promotion_code,

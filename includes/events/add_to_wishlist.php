@@ -14,7 +14,7 @@ function tggr_add_to_wishlist()
     }
     
     if (isset($options['add_to_wishlist']) && $options['add_to_wishlist']) {
-        $wishlist_items = get_user_wishlist_items(); // Vervang dit door de daadwerkelijke logica om verlanglijst items op te halen.
+        $wishlist_items = get_user_wishlist_items();
 
         $cart = WC()->cart;
         $items = tggr_format_cart_items($cart);
@@ -44,8 +44,5 @@ function tggr_add_to_wishlist()
     }
 }
 
-// Removed - handled by script manager
-
-// Pas de hook aan op basis van je verlanglijst functionaliteit.
 add_action('your_wishlist_add_action', 'tggr_add_to_wishlist');
 ?>

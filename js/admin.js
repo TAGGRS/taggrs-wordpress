@@ -1,9 +1,9 @@
 document.addEventListener( 'DOMContentLoaded', function () {
 	const urlToggleField = document.getElementById( 'tggr_url_toggle' );
-	const enhancedTrackingCheckbox = document.getElementById( 'tggr_enhanced_tracking_v2' );
-	const containerIdField = document.getElementById( 'enhanced_tracking_v2_container_id' );
-	const enhancedTrackingSection = document.getElementById( 'enhanced_tracking_v2_section' );
-	const submitButton = document.querySelector( '#taggrs-options-form input[type="submit"], #taggrs-options-form button[type="submit"]' ); // Specifieke selectie van de submitknop binnen het formulier
+	const enhancedTrackingCheckbox = document.getElementById( 'tggr_tggr_enhanced_tracking_v2' );
+	const containerIdField = document.getElementById( 'tggr_enhanced_tracking_v2_container_id' );
+	const enhancedTrackingSection = document.getElementById( 'tggr_enhanced_tracking_v2_section' );
+	const submitButton = document.querySelector( '#tggr-options-form input[type="submit"], #tggr-options-form button[type="submit"]' ); // Specifieke selectie van de submitknop binnen het formulier
 
 	let errorMessage = document.createElement( 'p' );
 

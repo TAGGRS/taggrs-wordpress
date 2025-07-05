@@ -25,8 +25,8 @@ function tggr_inject_gtm_script()
     $gtm_url = rtrim($gtm_url, '/');
 
     $parameter = "id";
-    if (isset($gtm_options['enhanced_tracking_v2']) && $gtm_options['enhanced_tracking_v2']) {
-        $container_id = $gtm_options['enhanced_tracking_v2_container_id'];
+    if (isset($gtm_options['tggr_enhanced_tracking_v2']) && $gtm_options['tggr_enhanced_tracking_v2']) {
+        $container_id = $gtm_options['tggr_enhanced_tracking_v2_container_id'];
         $gtm_url = $gtm_url . "/$container_id.js";
         $gtm_code = str_replace('GTM-', '', $gtm_code);
         $parameter = "tg";
@@ -70,8 +70,8 @@ function tggr_inject_gtm_noscript()
     $gtm_url = rtrim($gtm_url, '/');
 
     $parameter = "id";
-    if (isset($gtm_options['enhanced_tracking_v2']) && $gtm_options['enhanced_tracking_v2']) {
-        $container_id = $gtm_options['enhanced_tracking_v2_container_id'];
+    if (isset($gtm_options['tggr_enhanced_tracking_v2']) && $gtm_options['tggr_enhanced_tracking_v2']) {
+        $container_id = $gtm_options['tggr_enhanced_tracking_v2_container_id'];
         $gtm_url = $gtm_url . "/$container_id.html";
         $gtm_code = str_replace('GTM-', '', $gtm_code);
         $parameter = "tg";
@@ -79,20 +79,11 @@ function tggr_inject_gtm_noscript()
         $gtm_url = $gtm_url . '/ns.html';
     }
 
-    //    if($gtm_url == 'on'){
-    //        $id = 'd6c41dc2-69f5-49d4-a510-cbe5cadad499';  // Fetch the ID from wherever you have it.
-    //        $bearer_token = '1|hUgtpWxPz17M0WC023NlLZhmM5EMGnaTKFsw70nr';  // Again, fetch this securely.
-    //        $data = fetch_container_data($id, $bearer_token);
+    // Output noscript iframe for GTM - this is required HTML output, not enqueueable content
     echo  "<!-- Server Side Tagging by TAGGRS (noscript) -->
-    <noscript><iframe src='" . esc_js($gtm_url) . "?" . esc_js($parameter) . "=" . esc_js($gtm_code) . "'
+    <noscript><iframe src='" . esc_url($gtm_url . "?" . $parameter . "=" . $gtm_code) . "'
                       height='0' width='0' style='display:none;visibility:hidden'></iframe></noscript>
     <!-- End Server Side Tagging by TAGGRS (noscript) -->";
-    //    } else if (!empty($gtm_code) && !empty($gtm_url)) {
-    //        echo "<!-- Server Side Tagging by TAGGRS (noscript) -->
-    //    <noscript><iframe src='https://googletagmanager.com/ns.html?id=" . esc_js($gtm_code) . "'
-    //                      height='0' width='0' style='display:none;visibility:hidden'></iframe></noscript>
-    //    <!-- End Server Side Tagging by TAGGRS (noscript) -->";
-    //    }
 }
 // If your theme supports the 'wp_body_open' action (introduced in WP 5.2), you can use that.
 add_action('wp_body_open', 'tggr_inject_gtm_noscript');

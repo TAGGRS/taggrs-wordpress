@@ -48,7 +48,6 @@ function tggr_remove_from_cart_event($cart_item_key, $instance)
 }
 add_action('woocommerce_cart_item_removed', 'tggr_remove_from_cart_event', 10, 2);
 
-// Removed - handled by script manager
 
 function tggr_ajax_remove_from_cart_script()
 {

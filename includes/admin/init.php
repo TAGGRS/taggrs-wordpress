@@ -123,7 +123,7 @@ function tggr_options_page_html() {
     ?>
     <div class="wrap">
         <?php 
-        $image_url = PLUGIN_PATH . 'includes/admin/images/taggrs-logo-blauw.png';
+        $image_url = TGGR_PLUGIN_PATH . 'includes/admin/images/taggrs-logo-blauw.png';
         // Plugin logo for admin interface - not using wp_get_attachment_image as this is a bundled asset
         // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage -- Plugin bundled logo asset
         // phpcs:disable PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
@@ -131,7 +131,7 @@ function tggr_options_page_html() {
             sprintf(
                 '<img src="%s" alt="%s" style="width: 250px; height: auto; margin-top: 25px; margin-bottom: 25px;" />',
                 esc_url($image_url),
-                esc_attr__('TAGGRS Logo', 'taggrs-datalayer')
+                esc_attr__('TAGGRS Logo', 'taggrs-server-side-tracking')
             ),
             array(
                 'img' => array(
@@ -211,7 +211,7 @@ function tggr_admin_scripts($hook) {
     if ('toplevel_page_tggr-settings' != $hook) {
         return;
     }
-    wp_enqueue_script('tggr-admin', plugins_url('../../js/admin.js', __FILE__), array(), TGGR_VERSION, true);
+    wp_enqueue_script('tggr-admin-script', TGGR_PLUGIN_PATH . 'js/admin.js', array(), TGGR_VERSION, true);
 }
 add_action('admin_enqueue_scripts', 'tggr_admin_scripts');
 
@@ -232,17 +232,71 @@ function tggr_code_sanitize($input) {
 }
 
 function tggr_events_sanitize($input) {
-    return $input;
+    // Sanitize the events array properly
+    if (!is_array($input)) {
+        return array();
+    }
+    
+    $sanitized = array();
+    $allowed_events = array(
+        'view_item', 'add_to_cart', 'purchase', 'view_cart', 'view_item_list',
+        'begin_checkout', 'refund', 'add_to_wishlist', 'add_payment_info',
+        'add_shipping_info', 'remove_from_cart', 'select_item', 'view_promotion',
+        'select_promotion', 'tggr_url_toggle', 'tggr_enhanced_tracking_v2',
+        'tggr_enhanced_tracking_v2_container_id'
+    );
+    
+    foreach ($input as $key => $value) {
+        if (in_array($key, $allowed_events, true)) {
+            if ($key === 'tggr_url_toggle' || $key === 'tggr_enhanced_tracking_v2_container_id') {
+                // Sanitize text fields
+                $sanitized[$key] = sanitize_text_field($value);
+            } else {
+                // Sanitize checkbox values (should be 1 or empty)
+                $sanitized[$key] = ($value === '1' || $value === 1) ? 1 : 0;
+            }
+        }
+    }
+    
+    return $sanitized;
 }
 
 function tggr_options_sanitize($input) {
+    if (!is_array($input)) {
+        $input = array();
+    }
+    
+    // Always ensure tggr_url is the default Google Tag Manager URL
     $input['tggr_url'] = 'https://googletagmanager.com/';
 
-    $input['enhanced_tracking_v2'] = 0;
-    $input['enhanced_tracking_v2_container_id'] = '';
+    // Sanitize Enhanced Tracking Script v2 settings
+    $input['tggr_enhanced_tracking_v2'] = isset($input['tggr_enhanced_tracking_v2']) ? 1 : 0;
+    
+    // Sanitize container ID
+    $input['tggr_enhanced_tracking_v2_container_id'] = isset($input['tggr_enhanced_tracking_v2_container_id']) 
+        ? sanitize_text_field($input['tggr_enhanced_tracking_v2_container_id']) 
+        : '';
 
-    if (!empty($input['enhanced_tracking_v2']) && empty($input['enhanced_tracking_v2_container_id'])) {
-        $input['enhanced_tracking_v2'] = 0;
+    // If enhanced tracking v2 is enabled but no container ID is provided, disable it
+    if (!empty($input['tggr_enhanced_tracking_v2']) && empty($input['tggr_enhanced_tracking_v2_container_id'])) {
+        $input['tggr_enhanced_tracking_v2'] = 0;
+    }
+    
+    // Sanitize the URL toggle field (subdomain for enhanced tracking script)
+    if (isset($input['tggr_url_toggle'])) {
+        $input['tggr_url_toggle'] = sanitize_text_field($input['tggr_url_toggle']);
+    }
+    
+    // Sanitize all event checkboxes
+    $allowed_events = array(
+        'view_item', 'add_to_cart', 'purchase', 'view_cart', 'view_item_list',
+        'begin_checkout', 'refund', 'add_to_wishlist', 'add_payment_info',
+        'add_shipping_info', 'remove_from_cart', 'select_item', 'view_promotion',
+        'select_promotion'
+    );
+    
+    foreach ($allowed_events as $event) {
+        $input[$event] = isset($input[$event]) ? 1 : 0;
     }
 
     return $input;
@@ -292,23 +346,23 @@ function tggr_url_toggle_cb() {
     echo ( '<p class="description"><i>If you do not want to use the Enhanced Tracking Script, leave this field empty</i></p>' );
 }
 
-function tggr_enhanced_tracking_v2_cb($args) {
+function tggr_tggr_enhanced_tracking_v2_cb($args) {
     $options = get_option('tggr_options');
     $disabled = !isset($options['tggr_url_toggle']) || $options['tggr_url_toggle'] == '';
-    $v2_active = isset($options['enhanced_tracking_v2']) ? checked($options['enhanced_tracking_v2'], 1, false) : '';
-    $container_id = isset($options['enhanced_tracking_v2_container_id']) ? $options['enhanced_tracking_v2_container_id'] : '';
+    $v2_active = isset($options['tggr_enhanced_tracking_v2']) ? checked($options['tggr_enhanced_tracking_v2'], 1, false) : '';
+    $container_id = isset($options['tggr_enhanced_tracking_v2_container_id']) ? $options['tggr_enhanced_tracking_v2_container_id'] : '';
 
-    echo '<div id="enhanced_tracking_v2_section" style="' . ($disabled ? 'opacity: 0.7;' : '') . '">';
+    echo '<div id="tggr_enhanced_tracking_v2_section" style="' . ($disabled ? 'opacity: 0.7;' : '') . '">';
     
     // Toggle
     echo "<div style='display:flex; gap: 6px;'>";
-    echo ("<input style='margin-top: 7px;' name='tggr_options[enhanced_tracking_v2]' " . ($disabled ? 'disabled' : '') . " type='checkbox' id='tggr_enhanced_tracking_v2' value='1' " . esc_attr($v2_active) . ">");
+    echo ("<input style='margin-top: 7px;' name='tggr_options[tggr_enhanced_tracking_v2]' " . ($disabled ? 'disabled' : '') . " type='checkbox' id='tggr_tggr_enhanced_tracking_v2' value='1' " . esc_attr($v2_active) . ">");
     echo '<p class="description"><b>Enable</b></p>';
     echo "</div>";
 
     // TAGGRS Container Identifier
     echo '<p class="description" style="margin-top: 10px;"><b>TAGGRS Container Identifier</b></p>';
-    echo '<input type="text" id="enhanced_tracking_v2_container_id" name="tggr_options[enhanced_tracking_v2_container_id]" ' . ($disabled ? 'disabled' : "") . ' style="width:350px;" value="' . esc_attr($container_id) . '" />';
+    echo '<input type="text" id="tggr_enhanced_tracking_v2_container_id" name="tggr_options[tggr_enhanced_tracking_v2_container_id]" ' . ($disabled ? 'disabled' : "") . ' style="width:350px;" value="' . esc_attr($container_id) . '" />';
     
     echo '</div>';
     echo '<p class="description"><i>The Enhanced Tracking Script v2 can only be used when you have entered a subdomain for the Enhanced Tracking Script.</i></p>';
@@ -349,9 +403,9 @@ function tggr_settings_init() {
 
     // Add field for Enhanced Tracking Script v2
     add_settings_field(
-        'tggr_enhanced_tracking_v2',
+        'tggr_tggr_enhanced_tracking_v2',
         'Enhanced Tracking Script v2',
-        'tggr_enhanced_tracking_v2_cb',
+        'tggr_tggr_enhanced_tracking_v2_cb',
         'tggr-settings',
         'tggr_section_gtm'
     );

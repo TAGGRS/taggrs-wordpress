@@ -61,7 +61,7 @@ class TGGR_Script_Manager {
         if (is_woocommerce() || is_cart() || is_checkout()) {
             wp_enqueue_script(
                 'tggr-wc-gtm-handler',
-                PLUGIN_PATH . 'js/wc-gtm-handler.js',
+                TGGR_PLUGIN_PATH . 'js/wc-gtm-handler.js',
                 array('jquery'),
                 TGGR_VERSION,
                 true
