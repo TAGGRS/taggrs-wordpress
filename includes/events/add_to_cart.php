@@ -40,37 +40,45 @@ function tggr_print_add_to_cart_script()
     if (!isset($options['add_to_cart']) || !$options['add_to_cart']) {
         return;
     }
-    ?>
-    <script>
+
+    wp_register_script('ga4-add-to-cart', false, array('jquery'), TGGR_VERSION, true);
+    wp_enqueue_script('ga4-add-to-cart');
+    
+    $script_data = array(
+        'cookiePath' => COOKIEPATH,
+        'cookieDomain' => COOKIE_DOMAIN
+    );
+    wp_localize_script('ga4-add-to-cart', 'tggr_add_to_cart', $script_data);
+    
+    $inline_script = '
         jQuery(document).ready(function($) {
-            function pushAddToCartData() {
-                var cookieValue = document.cookie.split('; ').find(row => row.startsWith('tggr_add_to_cart_data='));
+            function tggrPushAddToCartData() {
+                var cookieValue = document.cookie.split("; ").find(row => row.startsWith("tggr_add_to_cart_data="));
                 if (cookieValue) {
                     try {
-                        var data = JSON.parse(atob(decodeURIComponent(cookieValue.split('=')[1])));
+                        var data = JSON.parse(atob(decodeURIComponent(cookieValue.split("=")[1])));
                         window.dataLayer = window.dataLayer || [];
                         window.dataLayer.push(data);
                         
                         // Delete cookie after pushing data
-                        document.cookie = "tggr_add_to_cart_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo esc_js(COOKIEPATH); ?>; domain=<?php echo esc_js(COOKIE_DOMAIN); ?>";
+                        document.cookie = "tggr_add_to_cart_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=" + tggr_add_to_cart.cookiePath + "; domain=" + tggr_add_to_cart.cookieDomain;
                     } catch(e) {
-                        console.error('Add to cart data error:', e);
+                        console.error("Add to cart data error:", e);
                     }
                 }
             }
             
             // Check on load (for non-AJAX calls)
-            pushAddToCartData();
+            tggrPushAddToCartData();
             
             // Check after AJAX add to cart events
-            $(document.body).on('added_to_cart updated_wc_div wc_fragments_refreshed', function() {
-                setTimeout(pushAddToCartData, 500);
+            $(document.body).on("added_to_cart updated_wc_div wc_fragments_refreshed", function() {
+                setTimeout(tggrPushAddToCartData, 500);
             });
         });
-
-
-    </script>
-    <?php
+    ';
+    
+    wp_add_inline_script('ga4-add-to-cart', $inline_script);
 }
 add_action('wp_footer', 'tggr_print_add_to_cart_script');
 

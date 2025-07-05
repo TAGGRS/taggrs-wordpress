@@ -1,19 +1,3 @@
-// Sample JavaScript code, make sure to adapt it based on your needs
-jQuery(document).ready(function($) {
-    $('.nav-tab').click(function(e) {
-        e.preventDefault();
-        $('.nav-tab').removeClass('nav-tab-active');
-        $(this).addClass('nav-tab-active');
-        var tab = $(this).attr('href').split('&tab=')[1];
-        if(tab == 'gtm') {
-            // Show GTM settings and hide events
-        } else if(tab == 'events') {
-            // Show events and hide GTM settings
-        }
-    });
-});
-
-
 document.addEventListener( 'DOMContentLoaded', function () {
 	const urlToggleField = document.getElementById( 'tggr_url_toggle' );
 	const enhancedTrackingCheckbox = document.getElementById( 'tggr_enhanced_tracking_v2' );
@@ -21,7 +5,6 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	const enhancedTrackingSection = document.getElementById( 'enhanced_tracking_v2_section' );
 	const submitButton = document.querySelector( '#taggrs-options-form input[type="submit"], #taggrs-options-form button[type="submit"]' ); // Specifieke selectie van de submitknop binnen het formulier
 
-	// Foutmelding element aanmaken
 	let errorMessage = document.createElement( 'p' );
 
 	errorMessage.style.color = 'red';

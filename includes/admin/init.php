@@ -6,7 +6,7 @@ function tggr_options_page() {
         'TAGGRS',    // Page title
         'TAGGRS',             // Menu title
         'manage_options',            // Capability
-        'wc-gtm-settings',           // Menu slug
+        'tggr-settings',           // Menu slug
         'tggr_options_page_html',  // Callback function
         plugins_url('/images/wp-logo-taggrs.png', __FILE__),       // Icon URL (using a WordPress dashicon)
         25                           // Position
@@ -14,83 +14,62 @@ function tggr_options_page() {
 }
 add_action('admin_menu', 'tggr_options_page');
 
-function tggr_admin_styles() {
-    echo "
-    <style>
-        #adminmenu .toplevel_page_wc-gtm-settings img {
-            padding-top: 6px;  /* Adjust as needed */
-        }
-    </style>
-    ";
-}
-add_action('admin_head', 'tggr_admin_styles');
-
-function tggr_enqueue_admin_styles() {
-    // Ensure it's only loaded in the WordPress dashboard.
-    if ( is_admin() ) {
-        wp_enqueue_style( 'wc-gtm-admin-styles', plugins_url('/css/style.css', __FILE__), array(), '1.0.0' );
-    }
-}
-add_action( 'admin_enqueue_scripts', 'tggr_enqueue_admin_styles' );
-
-
-function tggr_options_page_html() {
-    if (!current_user_can('manage_options')) {
+function tggr_enqueue_admin_styles($hook) {
+    // Only load on our plugin's admin page
+    if ('toplevel_page_tggr-settings' !== $hook) {
         return;
     }
-
-    settings_errors('tggr_messages');
-
-    // Select tab, can be: gtm, events
-    $active_tab = 'gtm'; // Default tab
     
-    // Only process tab parameter if it's a valid value
-    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Simple tab switching in admin area
-    if (isset($_GET['tab']) && in_array($_GET['tab'], ['gtm', 'events'], true)) {
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Tab parameter validation for admin UI
-        $active_tab = sanitize_key($_GET['tab']);
-    }
+    // Register and enqueue main admin stylesheet
+    wp_register_style(
+        'tggr-admin-styles',
+        plugins_url('/css/style.css', __FILE__),
+        array(),
+        TGGR_VERSION
+    );
+    wp_enqueue_style('tggr-admin-styles');
     
-    switch($active_tab):
-        case 'gtm':
-        case 'events':
-            break;
-        default:
-            $active_tab = 'gtm';
-        endswitch;
-
-    ?>
-    <style>
-        .custom-container {
+    // Register and enqueue admin page specific styles
+    wp_register_style(
+        'tggr-admin-page-styles',
+        false, // No file, we'll add inline CSS
+        array('tggr-admin-styles'), // Depends on main stylesheet
+        TGGR_VERSION
+    );
+    wp_enqueue_style('tggr-admin-page-styles');
+    
+    // Add inline CSS for admin page specific styles
+    $admin_page_css = '
+        .tggr-container {
             margin: 0;
             text-align: center;
         }
 
-        .custom-heading {
+        .tggr-heading {
             font-weight: 600;
             color: #000;
             line-height: 1.5;
             font-size: 18px;
-            margin-bottom: 36px; /* 9 * 4px */
+            margin-bottom: 36px;
         }
 
-        .custom-heading span {
+        .tggr-heading span {
             display: block;
         }
 
-        .custom-heading .bolder {
+        .tggr-heading .tggr-bolder {
             font-weight: 700;
         }
 
-        .custom-heading .smaller {
+        .tggr-heading .tggr-smaller {
             font-size: 15px;
         }
 
-        .custom-paragraph {
+        .tggr-paragraph {
             text-align: center;
         }
 
-        .custom-button {
+        .tggr-button {
             display: inline-block;
             padding: 0.375rem 0.75rem;
             font-size: 0.875rem;
@@ -100,18 +79,48 @@ function tggr_options_page_html() {
             margin: 4px;
         }
 
-        .btn-primary {
+        .tggr-btn-primary {
             color: #fff;
             background-color: #299f15;
             border-color: #299f15;
         }
 
-        .btn-secondary {
+        .tggr-btn-secondary {
             background-color: rgba(255, 255, 255, 0.2);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-    </style>
+    ';
+    
+    wp_add_inline_style('tggr-admin-page-styles', $admin_page_css);
+    
+    // Add menu icon specific styles
+    wp_register_style(
+        'tggr-menu-icon-styles',
+        false, // No file, inline CSS only
+        array(),
+        TGGR_VERSION
+    );
+    wp_enqueue_style('tggr-menu-icon-styles');
+    
+    $menu_icon_css = '
+        #adminmenu .toplevel_page_tggr-settings img {
+            padding-top: 6px;
+        }
+    ';
+    
+    wp_add_inline_style('tggr-menu-icon-styles', $menu_icon_css);
+}
+add_action('admin_enqueue_scripts', 'tggr_enqueue_admin_styles');
+
+function tggr_options_page_html() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+
+    settings_errors('tggr_messages');
+
+    ?>
     <div class="wrap">
         <?php 
         $image_url = PLUGIN_PATH . 'includes/admin/images/taggrs-logo-blauw.png';
@@ -140,19 +149,16 @@ function tggr_options_page_html() {
             <div style="flex: 70%; max-width: 70%; padding-right: 2%;">
                 <div class="postbox">
                     <div class="inside">
-                        <form action="options.php" method="post" id="taggrs-options-form">
+                        <form action="options.php" method="post" id="tggr-options-form">
                             <?php
                             settings_fields('tggr'); // This registers nonces etc. for the page
-
-                            // Display both settings, but use a PHP condition to hide the non-active section
-                            ?>
-                            <div <?php $active_tab == 'gtm' ? '' : 'style="display:none"'; ?>>
-                                <?php do_settings_sections('wc-gtm-settings'); ?>
-                            </div>
-                            <div <?php $active_tab == 'events' ? '' : 'style="display:none"'; ?>>
-                                <?php do_settings_sections('wc-gtm-settings-events'); ?>
-                            </div>
-                            <?php
+                            
+                            // Display GTM settings
+                            do_settings_sections('tggr-settings');
+                            
+                            // Display Events settings
+                            do_settings_sections('tggr-settings-events');
+                            
                             submit_button('Save Changes');
                             ?>
                         </form>
@@ -161,14 +167,14 @@ function tggr_options_page_html() {
             </div>
             <div style="flex: 28%; max-width: 28%; height: 100%;">
                  <div class="postbox">
-                     <div class="custom-container">
-                         <h1 class="custom-heading">
-                             <span class="bolder">Welcome in the world of TAGGRS!</span>
-                             <span class="smaller">Check out Server Side Tracking</span>
+                     <div class="tggr-container">
+                         <h1 class="tggr-heading">
+                             <span class="tggr-bolder">Welcome in the world of TAGGRS!</span>
+                             <span class="tggr-smaller">Check out Server Side Tracking</span>
                          </h1>
-                         <p class="custom-paragraph">Enhance your website's performance and data privacy with server side tracking through Google Tag Manager. Discover the ease and efficiency of managing your tags on TAGGRS' reliable and user-friendly platform. Start optimizing your tagging strategy today!</p>
+                         <p class="tggr-paragraph">Enhance your website's performance and data privacy with server side tracking through Google Tag Manager. Discover the ease and efficiency of managing your tags on TAGGRS' reliable and user-friendly platform. Start optimizing your tagging strategy today!</p>
                          <div>
-                             <a href="https://taggrs.io/" class="custom-button btn-primary" target="_blank">Check out TAGGRS</a>
+                             <a href="https://taggrs.io/" class="tggr-button tggr-btn-primary" target="_blank">Check out TAGGRS</a>
                          </div>
                      </div>
                  </div>
@@ -178,7 +184,7 @@ function tggr_options_page_html() {
     <?php
 }
 
-
+// Rest of your existing functions remain the same...
 function tggr_get_defaults() {
     return [
         'view_item' => 1,
@@ -202,10 +208,10 @@ function tggr_get_defaults() {
 add_filter('default_option_tggr_options', 'tggr_get_defaults');
 
 function tggr_admin_scripts($hook) {
-    if ('toplevel_page_wc-gtm-settings' != $hook) {
+    if ('toplevel_page_tggr-settings' != $hook) {
         return;
     }
-    wp_enqueue_script('wc-gtm-admin', plugins_url('../../js/admin.js', __FILE__), array('jquery'), '1.0.0', true);
+    wp_enqueue_script('tggr-admin', plugins_url('../../js/admin.js', __FILE__), array(), TGGR_VERSION, true);
 }
 add_action('admin_enqueue_scripts', 'tggr_admin_scripts');
 
@@ -215,7 +221,6 @@ function tggr_admin_notices() {
         delete_transient('tggr_settings_error');  // Remove the error now that we've displayed it.
     }
 }
-
 add_action('admin_notices', 'tggr_admin_notices');
 
 function tggr_code_sanitize($input) {
@@ -319,7 +324,7 @@ function tggr_settings_init() {
         'tggr_section_gtm',
         'Google Tag Manager Settings',
         'tggr_section_gtm_cb',
-        'wc-gtm-settings'
+        'tggr-settings'
     );
 
     // Add field to input GTM code
@@ -327,7 +332,7 @@ function tggr_settings_init() {
         'tggr_code',
         'Google Tag Manager Code',
         'tggr_code_cb',
-        'wc-gtm-settings',
+        'tggr-settings',
         'tggr_section_gtm'
     );
 
@@ -338,7 +343,7 @@ function tggr_settings_init() {
         'tggr_url',
         'Subdomain for Enhanced Tracking Script',
         'tggr_url_toggle_cb',
-        'wc-gtm-settings',
+        'tggr-settings',
         'tggr_section_gtm'
     );
 
@@ -347,20 +352,19 @@ function tggr_settings_init() {
         'tggr_enhanced_tracking_v2',
         'Enhanced Tracking Script v2',
         'tggr_enhanced_tracking_v2_cb',
-        'wc-gtm-settings',
+        'tggr-settings',
         'tggr_section_gtm'
     );
 
     // Register a new setting for our options page for the events.
     register_setting('tggr', 'tggr_options', array('sanitize_callback' => 'tggr_options_sanitize'));
 
-
     // Add a new section to our options page for the events.
     add_settings_section(
-        'tggr_section_events',       // Changed this to make it more descriptive
+        'tggr_section_events',
         'Events',
         'tggr_section_callback',
-        'wc-gtm-settings-events'      // Different slug for the events page
+        'tggr-settings-events'
     );
 
     // Add fields to our section.
@@ -386,8 +390,8 @@ function tggr_settings_init() {
             'tggr_field_' . $event,
             ucfirst(str_replace('_', ' ', $event)),
             'tggr_field_callback',
-            'wc-gtm-settings-events',   // This matches the slug above for the events section
-            'tggr_section_events',    // Use the updated section ID here
+            'tggr-settings-events',
+            'tggr_section_events',
             [
                 'label_for' => 'tggr_field_' . $event,
                 'event_name' => $event
@@ -396,8 +400,5 @@ function tggr_settings_init() {
     }
 }
 
-
 add_action('admin_init', 'tggr_settings_init');
-
-
 ?>

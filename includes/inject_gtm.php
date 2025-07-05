@@ -34,28 +34,19 @@ function tggr_inject_gtm_script()
         $gtm_url = $gtm_url . '/gtm.js';
     }
 
-    //    if($gtm_url == 'on'){
-    //        $id = 'd6c41dc2-69f5-49d4-a510-cbe5cadad499';  // Fetch the ID from wherever you have it.
-    //        $bearer_token = '1|hUgtpWxPz17M0WC023NlLZhmM5EMGnaTKFsw70nr';  // Again, fetch this securely.
-    //        $data = fetch_container_data($id, $bearer_token);
-    echo "<!-- Server Side Tagging by TAGGRS -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    // Use wp_enqueue_script instead of direct script output
+    wp_register_script('tggr-gtm-script', false, array(), TGGR_VERSION, false);
+    wp_enqueue_script('tggr-gtm-script');
+    
+    $gtm_script = "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     '" . esc_js($gtm_url) . "?" . esc_js($parameter) . "='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','" . esc_js($gtm_code) . "');</script>
-    <!-- End Server Side Tagging by TAGGRS -->";
-    //    } else if (!empty($gtm_code) && !empty($gtm_url)) {
-    //        echo "<!-- Server Side Tagging by TAGGRS -->
-    //    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    //    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    //    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    //    'https://googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    //    })(window,document,'script','dataLayer','" . esc_js($gtm_code) . "');</script>
-    //    <!-- End Server Side Tagging by TAGGRS -->";
-    //    }
+    })(window,document,'script','dataLayer','" . esc_js($gtm_code) . "');";
+    
+    wp_add_inline_script('tggr-gtm-script', $gtm_script, 'after');
 }
-add_action('wp_head', 'tggr_inject_gtm_script');
+add_action('wp_enqueue_scripts', 'tggr_inject_gtm_script');
 
 
 function tggr_inject_gtm_noscript()

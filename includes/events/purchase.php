@@ -17,37 +17,35 @@ function tggr_gtm_purchase($order_id)
 
         $hashed_email = tggr_hash_email($order->get_billing_email());
         $hashed_phone = tggr_hash_email($order->get_billing_phone());
-?>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            dataLayer.push({
-                'event': 'purchase',
-                'ecommerce': {
-                    'currency': '<?php echo esc_js($order->get_currency()); ?>',
-                    'transaction_id': '<?php echo esc_js($order->get_order_number()); ?>',
-                    'value': <?php echo esc_js($order->get_total()); ?>,
-                    'tax': <?php echo esc_js($order->get_total_tax()); ?>,
-                    'shipping': <?php echo esc_js($order->get_shipping_total()); ?>,
-                    'coupon': '<?php echo esc_js(implode(', ', $order->get_coupon_codes())); ?>',
-                    'items': <?php echo wp_json_encode($products); ?>, // Use wp_json_encode for encoding JSON in WP.
-                    'user_data': {
-                        'email': '<?php echo esc_js($order->get_billing_email()); ?>',
-                        'email_hashed': '<?php echo esc_js($hashed_email); ?>',
-                        'first_name': '<?php echo esc_js($order->get_billing_first_name()); ?>',
-                        'last_name': '<?php echo esc_js($order->get_billing_last_name()); ?>',
-                        'address_1': '<?php echo esc_js($order->get_billing_address_1()); ?>',
-                        'address_2': '<?php echo esc_js($order->get_billing_address_2()); ?>',
-                        'city': '<?php echo esc_js($order->get_billing_city()); ?>',
-                        'postcode': '<?php echo esc_js($order->get_billing_postcode()); ?>',
-                        'country': '<?php echo esc_js($order->get_billing_country()); ?>',
-                        'state': '<?php echo esc_js($order->get_billing_state()); ?>',
-                        'phone': '<?php echo esc_js($order->get_billing_phone()); ?>',
-                        'phone_hashed': '<?php echo esc_js($hashed_phone); ?>'
-                    },
-                }
-            });
-        </script>
-<?php
+
+        $purchase_data = array(
+            'event' => 'purchase',
+            'ecommerce' => array(
+                'currency' => $order->get_currency(),
+                'transaction_id' => $order->get_order_number(),
+                'value' => floatval($order->get_total()),
+                'tax' => floatval($order->get_total_tax()),
+                'shipping' => floatval($order->get_shipping_total()),
+                'coupon' => implode(', ', $order->get_coupon_codes()),
+                'items' => $products,
+                'user_data' => array(
+                    'email' => $order->get_billing_email(),
+                    'email_hashed' => $hashed_email,
+                    'first_name' => $order->get_billing_first_name(),
+                    'last_name' => $order->get_billing_last_name(),
+                    'address_1' => $order->get_billing_address_1(),
+                    'address_2' => $order->get_billing_address_2(),
+                    'city' => $order->get_billing_city(),
+                    'postcode' => $order->get_billing_postcode(),
+                    'country' => $order->get_billing_country(),
+                    'state' => $order->get_billing_state(),
+                    'phone' => $order->get_billing_phone(),
+                    'phone_hashed' => $hashed_phone
+                )
+            )
+        );
+
+        tggr_add_ga4_event_data('ga4-purchase', 'ga4PurchaseData', $purchase_data);
     }
 }
 add_action('woocommerce_thankyou', 'tggr_gtm_purchase');

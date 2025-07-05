@@ -13,16 +13,23 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-function tggr_enqueue_jquery() {
-    wp_enqueue_script('jquery');
+// Define plugin version constant
+if ( ! defined( 'TGGR_VERSION' ) ) {
+    define( 'TGGR_VERSION', '1.1.7' );
 }
-add_action('wp_enqueue_scripts', 'tggr_enqueue_jquery');
+
+
+
+
 
 // Constant plugin path
 define('PLUGIN_PATH', plugin_dir_url( __FILE__ ));
 
 // admin Page
 require_once plugin_dir_path(__FILE__) . 'includes/admin/init.php';
+
+// Script Manager Class
+require_once plugin_dir_path(__FILE__) . 'includes/script-manager.php';
 
 // inject gtm codes
 require_once plugin_dir_path(__FILE__) . 'includes/inject_gtm.php';
@@ -39,11 +46,14 @@ require_once plugin_dir_path(__FILE__) . 'includes/events/purchase.php';
 require_once plugin_dir_path(__FILE__) . 'includes/events/view_item_list.php';
 require_once plugin_dir_path(__FILE__) . 'includes/events/refund.php';
 require_once plugin_dir_path(__FILE__) . 'includes/events/add_to_wishlist.php';
+require_once plugin_dir_path(__FILE__) . 'includes/events/add_payment_info.php';
 require_once plugin_dir_path(__FILE__) . 'includes/events/add_shipping_info.php';
 require_once plugin_dir_path(__FILE__) . 'includes/events/remove_from_cart.php';
 require_once plugin_dir_path(__FILE__) . 'includes/events/select_item.php';
 require_once plugin_dir_path(__FILE__) . 'includes/events/view_promotion.php';
 require_once plugin_dir_path(__FILE__) . 'includes/events/select_promotion.php';
+
+
 
 
 

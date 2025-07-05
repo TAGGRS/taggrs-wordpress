@@ -24,11 +24,11 @@ function tggr_select_promotion_event()
         )
     );
    
+    // Store data in cookie instead of inline script
     $cookie_value = base64_encode(wp_json_encode($event_data));
     setcookie('tggr_promotion_data', $cookie_value, time() + 300, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), false);
 }
 add_action('woocommerce_applied_coupon', 'tggr_select_promotion_event');
-
 
 function tggr_print_promotion_script()
 {
@@ -36,35 +36,45 @@ function tggr_print_promotion_script()
     if (!isset($options['select_promotion']) || !$options['select_promotion']) {
         return;
     }
-    ?>
-    <script>
+
+    wp_register_script('ga4-select-promotion', false, array('jquery'), TGGR_VERSION, true);
+    wp_enqueue_script('ga4-select-promotion');
+    
+    $script_data = array(
+        'cookiePath' => COOKIEPATH,
+        'cookieDomain' => COOKIE_DOMAIN
+    );
+    wp_localize_script('ga4-select-promotion', 'tggr_select_promotion', $script_data);
+    
+    $inline_script = '
         jQuery(document).ready(function($) {
-            function pushPromotionData() {
-                var cookieValue = document.cookie.split('; ').find(row => row.startsWith('tggr_promotion_data='));
+            function tggrPushPromotionData() {
+                var cookieValue = document.cookie.split("; ").find(row => row.startsWith("tggr_promotion_data="));
                 if (cookieValue) {
                     try {
-                        var data = JSON.parse(atob(decodeURIComponent(cookieValue.split('=')[1])));
+                        var data = JSON.parse(atob(decodeURIComponent(cookieValue.split("=")[1])));
                         window.dataLayer = window.dataLayer || [];
                         window.dataLayer.push(data);
                         
                         // Delete cookie after pushing data
-                        document.cookie = "tggr_promotion_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo esc_js(COOKIEPATH); ?>; domain=<?php echo esc_js(COOKIE_DOMAIN); ?>";
-                    } catch(e) {
-                        console.error('Promotion data error:', e);
+                        document.cookie = "tggr_promotion_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=" + tggr_select_promotion.cookiePath + "; domain=" + tggr_select_promotion.cookieDomain;
+                    } catch (e) {
+                        console.error("Promotion data error:", e);
                     }
                 }
             }
-            
-            // Check on load (for non AJAX calls)
-            pushPromotionData();
-            
-            // Check after updates (for AJAX calls)
-            $(document.body).on('updated_wc_div applied_coupon fkcart_fragments_refreshed', function() {
-                setTimeout(pushPromotionData, 500);
+
+            // Check on load
+            tggrPushPromotionData();
+
+            // Check after coupon updates
+            $(document.body).on("updated_wc_div wc_fragments_refreshed", function() {
+                setTimeout(tggrPushPromotionData, 500);
             });
         });
-    </script>
-    <?php
+    ';
+    
+    wp_add_inline_script('ga4-select-promotion', $inline_script);
 }
 add_action('wp_footer', 'tggr_print_promotion_script');
 ?>

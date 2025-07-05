@@ -19,9 +19,6 @@ function tggr_select_item_event()
     $email = $current_user->exists() ? $current_user->user_email : '';
     $hashed_email = $email ? tggr_hash_email($email) : '';
 
-    $categories = get_the_terms($product->get_id(), 'product_cat');
-    $category_name = !empty($categories) ? $categories[0]->name : '';
-
     // Bepaal de context voor item_list_id en item_list_name
     $item_list_id = 'default_list_id';
     $item_list_name = 'Default List';
@@ -53,10 +50,10 @@ function tggr_select_item_event()
         )
     );
 
+    // Store data in cookie instead of inline script
     $cookie_value = base64_encode(wp_json_encode($event_data));
     setcookie('tggr_select_item_data', $cookie_value, time() + 300, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), false);
 }
-add_action('woocommerce_before_single_product', 'tggr_select_item_event');
 
 function tggr_print_select_item_script()
 {
@@ -64,34 +61,44 @@ function tggr_print_select_item_script()
     if (!isset($options['select_item']) || !$options['select_item']) {
         return;
     }
-    ?>
-    <script>
+
+    wp_register_script('ga4-select-item', false, array('jquery'), TGGR_VERSION, true);
+    wp_enqueue_script('ga4-select-item');
+    
+    $script_data = array(
+        'cookiePath' => COOKIEPATH,
+        'cookieDomain' => COOKIE_DOMAIN
+    );
+    wp_localize_script('ga4-select-item', 'tggr_select_item', $script_data);
+    
+    $inline_script = '
         jQuery(document).ready(function($) {
-            function pushSelectItemData() {
-                var cookieValue = document.cookie.split('; ').find(row => row.startsWith('tggr_select_item_data='));
+            function tggrPushSelectItemData() {
+                var cookieValue = document.cookie.split("; ").find(row => row.startsWith("tggr_select_item_data="));
                 if (cookieValue) {
                     try {
-                        var data = JSON.parse(atob(decodeURIComponent(cookieValue.split('=')[1])));
+                        var data = JSON.parse(atob(decodeURIComponent(cookieValue.split("=")[1])));
                         window.dataLayer = window.dataLayer || [];
                         window.dataLayer.push(data);
                         // Delete cookie after pushing data
-                        document.cookie = "tggr_select_item_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo esc_js(COOKIEPATH); ?>; domain=<?php echo esc_js(COOKIE_DOMAIN); ?>";
+                        document.cookie = "tggr_select_item_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=" + tggr_select_item.cookiePath + "; domain=" + tggr_select_item.cookieDomain;
                     } catch (e) {
-                        console.error('Select item data error:', e);
+                        console.error("Select item data error:", e);
                     }
                 }
             }
 
             // Check on load
-            pushSelectItemData();
+            tggrPushSelectItemData();
 
             // Check after updates (for potential AJAX calls)
-            $(document.body).on('updated_wc_div', function() {
-                setTimeout(pushSelectItemData, 500);
+            $(document.body).on("updated_wc_div", function() {
+                setTimeout(tggrPushSelectItemData, 500);
             });
         });
-    </script>
-    <?php
+    ';
+    
+    wp_add_inline_script('ga4-select-item', $inline_script);
 }
 add_action('wp_footer', 'tggr_print_select_item_script');
 ?>

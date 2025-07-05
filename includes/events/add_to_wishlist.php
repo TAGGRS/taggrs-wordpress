@@ -7,9 +7,12 @@ function tggr_add_to_wishlist()
 
     $current_user = wp_get_current_user();
     $hashed_email = '';
+    $email = '';
     if ($current_user->exists()) {
         $hashed_email = hash('sha256', $current_user->user_email);
+        $email = $current_user->user_email;
     }
+    
     if (isset($options['add_to_wishlist']) && $options['add_to_wishlist']) {
         $wishlist_items = get_user_wishlist_items(); // Vervang dit door de daadwerkelijke logica om verlanglijst items op te halen.
 
@@ -23,26 +26,25 @@ function tggr_add_to_wishlist()
             $total_value += $item_price * $item->quantity;
         }
 
-?>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            dataLayer.push({
-                'event': 'add_to_wishlist',
-                'ecommerce': {
-                    'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>', // De valuta van de winkel
-                    'value': <?php echo esc_js($total_value); ?>, // Totale waarde van de toegevoegde items
-                    'items': <?php echo wp_json_encode($items); ?>
-                },
-                'user_data': {
-                    'email_hashed': '<?php echo esc_js($hashed_email); ?>',
-                    'email': '<?php echo esc_js($current_user->user_email); ?>'
-                }
-            });
-        </script>
+        $wishlist_data = array(
+            'event' => 'add_to_wishlist',
+            'ecommerce' => array(
+                'currency' => get_woocommerce_currency(),
+                'value' => floatval($total_value),
+                'items' => $items
+            ),
+            'user_data' => array(
+                'email_hashed' => $hashed_email,
+                'email' => $email
+            )
+        );
 
-<?php
+        // Use centralized script manager
+        tggr_add_ga4_event_data('ga4-add-to-wishlist', 'ga4WishlistData', $wishlist_data);
     }
 }
+
+// Removed - handled by script manager
 
 // Pas de hook aan op basis van je verlanglijst functionaliteit.
 add_action('your_wishlist_add_action', 'tggr_add_to_wishlist');

@@ -36,27 +36,25 @@ function tggr_gtm_view_item_list()
                 $item_list_id = 'shop_page';
                 $item_list_name = 'Shop Page';
             }
-?>
-            <script>
-                window.dataLayer = window.dataLayer || [];
-                dataLayer.push({
-                    'event': 'view_item_list',
-                    'ecommerce': {
-                        'item_list_id': '<?php echo esc_js($item_list_id); ?>',
-                        'item_list_name': '<?php echo esc_js($item_list_name); ?>',
-                        'items': <?php echo wp_json_encode($products); ?>
-                    },
-                    'user_data': {
-                        'email_hashed': '<?php echo esc_js($hashed_email); ?>',
-                        'email': '<?php echo esc_js($email); ?>'
-                    }
-                });
-            </script>
 
-<?php
+            $view_item_list_data = array(
+                'event' => 'view_item_list',
+                'ecommerce' => array(
+                    'item_list_id' => $item_list_id,
+                    'item_list_name' => $item_list_name,
+                    'items' => $products
+                ),
+                'user_data' => array(
+                    'email_hashed' => $hashed_email,
+                    'email' => $email
+                )
+            );
+
+            tggr_add_ga4_event_data('ga4-view-item-list', 'ga4ViewItemListData', $view_item_list_data);
         }
     }
 }
-add_action('wp_footer', 'tggr_gtm_view_item_list');
+
+add_action('wp_enqueue_scripts', 'tggr_gtm_view_item_list');
 
 ?>

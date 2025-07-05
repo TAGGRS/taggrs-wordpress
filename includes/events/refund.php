@@ -4,46 +4,34 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 function tggr_refund($order_id)
 {
     $options = get_option('tggr_options');
-    $order = wc_get_order($order_id);
+    
+    if (isset($options['refund']) && $options['refund']) {
+        $order = wc_get_order($order_id);
+        $items = array();
 
-    $cart = WC()->cart;
-    $items = array();
-
-    foreach ($order->get_items() as $item_id => $item) {
-        $product = $item->get_product();
-        if(empty($product) === True)
-        {
-            continue;
-        }
-        
-        $categories = get_the_terms($product->get_id(), 'product_cat');
-        $item_categories = array();
-        foreach ($categories as $category) {
-            $item_categories[] = $category->name;
-        }
-
-        // Voeg hier aanvullende productcategorieën toe indien nodig
-        // Voorbeeld: $item_category2 = 'Adult';
-
-        $items[] = tggr_format_item($product->get_id(), $item->get_quantity());
-    }
-
-?>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        dataLayer.push({
-            'event': 'refund',
-            'ecommerce': {
-                'currency': '<?php echo esc_js($order->get_currency()); ?>',
-                'transaction_id': '<?php echo esc_js($order_id); ?>',
-                'value': '<?php echo esc_js($order->get_total()); ?>',
-                'shipping': '<?php echo esc_js($order->get_shipping_total()); ?>',
-                'tax': '<?php echo esc_js($order->get_total_tax()); ?>',
-                'items': <?php echo wp_json_encode($items); ?>
+        foreach ($order->get_items() as $item_id => $item) {
+            $product = $item->get_product();
+            if(empty($product) === True) {
+                continue;
             }
-        });
-    </script>
-<?php
+            
+            $items[] = tggr_format_item($product->get_id(), $item->get_quantity());
+        }
+
+        $refund_data = array(
+            'event' => 'refund',
+            'ecommerce' => array(
+                'currency' => $order->get_currency(),
+                'transaction_id' => (string)$order_id,
+                'value' => floatval($order->get_total()),
+                'shipping' => floatval($order->get_shipping_total()),
+                'tax' => floatval($order->get_total_tax()),
+                'items' => $items
+            )
+        );
+
+        tggr_add_ga4_event_data('ga4-refund', 'ga4RefundData', $refund_data);
+    }
 }
 
 add_action('woocommerce_order_status_refunded', 'tggr_refund');
