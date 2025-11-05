@@ -49,6 +49,20 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	}
 
 	function validateForm () {
+		// Disable/enable container ID field based on checkbox state and overall enhanced tracking availability
+		const urlToggleValue = urlToggleField.value;
+		const isUrlToggleEnabled = urlToggleValue !== '';
+
+		// Container ID field should be disabled if:
+		// 1. Enhanced tracking checkbox is not checked, OR
+		// 2. Enhanced tracking section is disabled (no subdomain)
+		containerIdField.disabled = !enhancedTrackingCheckbox.checked || !isUrlToggleEnabled;
+
+		// Clear container ID field when checkbox is unchecked
+		if (!enhancedTrackingCheckbox.checked) {
+			containerIdField.value = '';
+		}
+		
 		if ( enhancedTrackingCheckbox.checked && containerIdField.value.trim() === '' ) {
 			errorMessage.style.display = 'block';
 			submitButton.disabled = true;
