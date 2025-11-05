@@ -233,11 +233,20 @@ function tggr_events_sanitize($input) {
 function tggr_options_sanitize($input) {
     $input['tggr_url'] = 'https://googletagmanager.com/';
 
-    $input['enhanced_tracking_v2'] = 0;
-    $input['enhanced_tracking_v2_container_id'] = '';
-
-    if (!empty($input['enhanced_tracking_v2']) && empty($input['enhanced_tracking_v2_container_id'])) {
-        $input['enhanced_tracking_v2'] = 0;
+    // Sanitize enhanced_tracking_v2 checkbox
+    $input['enhanced_tracking_v2'] = isset($input['enhanced_tracking_v2']) ? 1 : 0;
+    
+    // If enhanced_tracking_v2 is NOT enabled, always clear the container ID
+    if (empty($input['enhanced_tracking_v2'])) {
+        $input['enhanced_tracking_v2_container_id'] = '';
+    } else {
+        // Only sanitize container ID if enhanced_tracking_v2 is enabled
+        $input['enhanced_tracking_v2_container_id'] = isset($input['enhanced_tracking_v2_container_id']) ? sanitize_text_field($input['enhanced_tracking_v2_container_id']) : '';
+        
+        // If enhanced_tracking_v2 is enabled but no container ID is provided, disable it
+        if (empty($input['enhanced_tracking_v2_container_id'])) {
+            $input['enhanced_tracking_v2'] = 0;
+        }
     }
 
     return $input;
