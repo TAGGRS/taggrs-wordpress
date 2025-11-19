@@ -7,6 +7,11 @@ function tggr_gtm_purchase($order_id)
 
     if (isset($options['purchase']) && $options['purchase']) {
         $order = wc_get_order($order_id);
+
+        if ($order->get_meta('_tggr_datalayer_fired', true)) {
+            return;
+        }
+
         $items = $order->get_items();
         $products = [];
 
@@ -48,6 +53,8 @@ function tggr_gtm_purchase($order_id)
             });
         </script>
 <?php
+        $order->update_meta_data('_tggr_datalayer_fired', true);
+        $order->save();
     }
 }
 add_action('woocommerce_thankyou', 'tggr_gtm_purchase');
