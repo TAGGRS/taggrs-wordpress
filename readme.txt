@@ -3,7 +3,7 @@ Contributors: TAGGRS
 Tags: woocommerce, google analytics, ga4, server-side tracking, analytics
 Requires at least: 4.5
 Tested up to: 6.8
-Stable tag: 1.1.9.3
+Stable tag: 1.1.10
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -21,6 +21,7 @@ Features:
 - Better privacy compliance.
 - Enhanced Conversions.
 - In-depth insights into customer journey and sales metrics via GA4.
+- Can be updated from within Wordpress.
 
 == Installation ==
 
