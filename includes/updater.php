@@ -251,25 +251,33 @@ class TAGGRS_Plugin_Updater {
             return $source;
         }
         
-        // Get the list of files in the source directory
+        // GitHub zipballs create a directory like: TAGGRS-taggrs-wordpress-abc1234
+        // We need to rename it to just: taggrs-wordpress
+        $corrected_source = trailingslashit( $remote_source ) . 'taggrs-wordpress/';
+        
+        // If the corrected source already exists, use it
+        if ( $wp_filesystem->is_dir( $corrected_source ) ) {
+            return $corrected_source;
+        }
+        
+        // Otherwise, find the first directory and rename it
         $source_files = $wp_filesystem->dirlist( $remote_source );
         
         if ( ! $source_files ) {
             return $source;
         }
         
-        // GitHub usually creates a directory like: TAGGRS-taggrs-wordpress-abc1234
-        // We need to find the correct subdirectory
-        $first_dir = null;
         foreach ( $source_files as $file_name => $file_details ) {
             if ( $file_details['type'] === 'd' ) {
-                $first_dir = trailingslashit( $remote_source ) . $file_name;
+                $old_source = trailingslashit( $remote_source ) . $file_name;
+                
+                // Rename to the expected directory name
+                if ( $wp_filesystem->move( $old_source, $corrected_source ) ) {
+                    return $corrected_source;
+                }
+                
                 break;
             }
-        }
-        
-        if ( $first_dir ) {
-            $source = trailingslashit( $first_dir );
         }
         
         return $source;
@@ -279,8 +287,6 @@ class TAGGRS_Plugin_Updater {
      * Post install hook
      */
     public function post_install( $response, $hook_extra, $result ) {
-        global $wp_filesystem;
-        
         if ( ! isset( $hook_extra['plugin'] ) || $hook_extra['plugin'] !== $this->plugin_basename ) {
             return $response;
         }
