@@ -13,6 +13,17 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
+// Reactivate plugin after update if it was active before
+add_action( 'admin_init', function() {
+    if ( get_transient( 'taggrs_was_active' ) ) {
+        delete_transient( 'taggrs_was_active' );
+        $plugin = plugin_basename( __FILE__ );
+        if ( ! is_plugin_active( $plugin ) ) {
+            activate_plugin( $plugin, '', false, true );
+        }
+    }
+} );
+
 function tggr_enqueue_jquery() {
     wp_enqueue_script('jquery');
 }
