@@ -17,7 +17,6 @@ class TAGGRS_Plugin_Updater {
     private $plugin_basename;
     private $github_repo;
     private $plugin_data;
-    private $github_response;
     
     /**
      * Constructor
@@ -27,18 +26,13 @@ class TAGGRS_Plugin_Updater {
         $this->plugin_basename = plugin_basename( dirname( dirname( __FILE__ ) ) . '/taggrs-datalayer.php' );
         $this->github_repo = 'TAGGRS/taggrs-wordpress';
         
-        // Debug: log the basename
-        error_log( 'TAGGRS Updater: Plugin basename = ' . $this->plugin_basename );
-        
         // Get plugin data
         if ( ! function_exists( 'get_plugin_data' ) ) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
         $this->plugin_data = get_plugin_data( dirname( dirname( __FILE__ ) ) . '/taggrs-datalayer.php' );
         
-        error_log( 'TAGGRS Updater: Current version = ' . $this->plugin_data['Version'] );
-        
-        // Hook into WordPress
+        // Hook into WordPress update system
         add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_update' ) );
         add_filter( 'plugins_api', array( $this, 'plugin_info' ), 10, 3 );
         add_filter( 'upgrader_post_install', array( $this, 'post_install' ), 10, 3 );
@@ -47,93 +41,27 @@ class TAGGRS_Plugin_Updater {
         // Add settings link to plugin page
         add_filter( 'plugin_action_links_' . $this->plugin_basename, array( $this, 'add_action_links' ) );
         
-        // Add admin notice for available updates
-        add_action( 'admin_notices', array( $this, 'update_notice' ) );
-        
-        // AJAX handler for manual update check
-        add_action( 'wp_ajax_taggrs_check_updates', array( $this, 'ajax_check_updates' ) );
-        
-        // Add plugin meta row
+        // Add GitHub link to plugin meta
         add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
     }
     
     /**
-     * AJAX handler for checking updates
-     */
-    public function ajax_check_updates() {
-        // Check nonce
-        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'taggrs-check-updates' ) ) {
-            wp_send_json_error( array( 'message' => 'Invalid nonce' ) );
-        }
-        
-        // Check permissions
-        if ( ! current_user_can( 'update_plugins' ) ) {
-            wp_send_json_error( array( 'message' => 'Permission denied' ) );
-        }
-        
-        // Clear cache
-        delete_transient( 'taggrs_github_release' );
-        
-        // Send success response
-        wp_send_json_success( array( 'message' => 'Update check completed' ) );
-    }
-    
-    /**
-     * Add custom meta to plugin row
+     * Add GitHub link to plugin meta
      */
     public function plugin_row_meta( $links, $file ) {
         if ( $file !== $this->plugin_basename ) {
             return $links;
         }
         
-        $auto_update_enabled = get_option( 'taggrs_auto_update', false );
-        
         $new_links = array(
             'github' => '<a href="https://github.com/' . $this->github_repo . '" target="_blank">' . __( 'GitHub', 'taggrs-datalayer' ) . '</a>',
         );
-        
-        if ( $auto_update_enabled ) {
-            $new_links['auto_update'] = '<span style="color: #00a32a;">⚙️ ' . __( 'Auto-update enabled', 'taggrs-datalayer' ) . '</span>';
-        }
         
         return array_merge( $links, $new_links );
     }
     
     /**
-     * Show admin notice if update is available
-     */
-    public function update_notice() {
-        $screen = get_current_screen();
-        
-        // Only show on plugins page
-        if ( $screen->id !== 'plugins' ) {
-            return;
-        }
-        
-        $release = $this->get_github_release_info();
-        
-        if ( ! $release ) {
-            return;
-        }
-        
-        $latest_version = ltrim( $release->tag_name, 'v' );
-        $current_version = $this->plugin_data['Version'];
-        
-        if ( version_compare( $current_version, $latest_version, '<' ) ) {
-            $message = sprintf(
-                /* translators: 1: plugin name, 2: current version, 3: new version */
-                __( '<strong>TAGGRS Plugin Update Available!</strong> You are running version %1$s. Version %2$s is now available. <a href="%3$s">View update settings</a>', 'taggrs-datalayer' ),
-                $current_version,
-                $latest_version,
-                admin_url( 'admin.php?page=wc-gtm-settings' )
-            );
-            
-            echo '<div class="notice notice-warning is-dismissible"><p>' . wp_kses_post( $message ) . '</p></div>';
-        }
-    }
-    
-    /**
-     * Add action links to plugin page
+     * Add settings link to plugin page
      */
     public function add_action_links( $links ) {
         $settings_link = '<a href="' . admin_url( 'admin.php?page=wc-gtm-settings' ) . '">' . __( 'Settings', 'taggrs-datalayer' ) . '</a>';
@@ -165,14 +93,11 @@ class TAGGRS_Plugin_Updater {
         ) );
         
         if ( is_wp_error( $response ) ) {
-            // Log error for debugging
-            error_log( 'TAGGRS Updater Error: ' . $response->get_error_message() );
             return false;
         }
         
         $response_code = wp_remote_retrieve_response_code( $response );
         if ( $response_code !== 200 ) {
-            error_log( 'TAGGRS Updater: GitHub API returned status code ' . $response_code );
             return false;
         }
         
@@ -180,10 +105,6 @@ class TAGGRS_Plugin_Updater {
         $data = json_decode( $body );
         
         if ( empty( $data ) || isset( $data->message ) ) {
-            // GitHub API error (e.g., rate limit)
-            if ( isset( $data->message ) ) {
-                error_log( 'TAGGRS Updater: GitHub API error - ' . $data->message );
-            }
             return false;
         }
         
@@ -194,38 +115,10 @@ class TAGGRS_Plugin_Updater {
     }
     
     /**
-     * Get readme.txt version from GitHub (fallback method)
-     */
-    private function get_readme_version() {
-        $readme_url = 'https://raw.githubusercontent.com/' . $this->github_repo . '/main/readme.txt';
-        
-        $response = wp_remote_get( $readme_url, array(
-            'timeout' => 10,
-        ) );
-        
-        if ( is_wp_error( $response ) ) {
-            return false;
-        }
-        
-        $body = wp_remote_retrieve_body( $response );
-        
-        // Parse readme.txt for Stable tag
-        if ( preg_match( '/Stable tag:\s*([0-9.]+)/i', $body, $matches ) ) {
-            return trim( $matches[1] );
-        }
-        
-        return false;
-    }
-    
-    /**
      * Check for updates
      */
     public function check_update( $transient ) {
-        error_log( 'TAGGRS: check_update called!' );
-        error_log( 'TAGGRS: transient checked = ' . print_r( $transient->checked ?? 'empty', true ) );
-        
         if ( empty( $transient->checked ) ) {
-            error_log( 'TAGGRS: Transient checked is empty, returning early' );
             return $transient;
         }
         
@@ -239,9 +132,6 @@ class TAGGRS_Plugin_Updater {
         // Get version from tag name (remove 'v' prefix if present)
         $latest_version = ltrim( $release->tag_name, 'v' );
         $current_version = $this->plugin_data['Version'];
-        
-        error_log( 'TAGGRS: Checking updates - Current: ' . $current_version . ', Latest: ' . $latest_version );
-        error_log( 'TAGGRS: Plugin basename: ' . $this->plugin_basename );
         
         // Compare versions
         if ( version_compare( $current_version, $latest_version, '<' ) ) {
@@ -261,8 +151,6 @@ class TAGGRS_Plugin_Updater {
                 $download_url = $release->zipball_url;
             }
             
-            error_log( 'TAGGRS: Download URL: ' . $download_url );
-            
             // WordPress expects specific object structure
             $update = new \stdClass();
             $update->id = 'taggrs-wordpress/' . $this->plugin_basename;
@@ -279,10 +167,6 @@ class TAGGRS_Plugin_Updater {
             $update->compatibility = new \stdClass();
             
             $transient->response[ $this->plugin_basename ] = $update;
-            
-            error_log( 'TAGGRS: Update added to transient' );
-        } else {
-            error_log( 'TAGGRS: No update needed' );
         }
         
         return $transient;
