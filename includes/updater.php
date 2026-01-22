@@ -36,7 +36,6 @@ class TAGGRS_Plugin_Updater {
         add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_update' ) );
         add_filter( 'plugins_api', array( $this, 'plugin_info' ), 10, 3 );
         add_filter( 'upgrader_post_install', array( $this, 'post_install' ), 10, 3 );
-        add_filter( 'upgrader_source_selection', array( $this, 'fix_source_selection' ), 10, 4 );
         
         // Add settings link to plugin page
         add_filter( 'plugin_action_links_' . $this->plugin_basename, array( $this, 'add_action_links' ) );
@@ -238,49 +237,6 @@ class TAGGRS_Plugin_Updater {
         $changelog = wpautop( $body );
         
         return $changelog;
-    }
-    
-    /**
-     * Fix source selection during installation
-     */
-    public function fix_source_selection( $source, $remote_source, $upgrader, $hook_extra = null ) {
-        global $wp_filesystem;
-        
-        // Check if we're updating this plugin
-        if ( ! isset( $hook_extra['plugin'] ) || $hook_extra['plugin'] !== $this->plugin_basename ) {
-            return $source;
-        }
-        
-        // GitHub zipballs create a directory like: TAGGRS-taggrs-wordpress-abc1234
-        // We need to rename it to just: taggrs-wordpress
-        $corrected_source = trailingslashit( $remote_source ) . 'taggrs-wordpress/';
-        
-        // If the corrected source already exists, use it
-        if ( $wp_filesystem->is_dir( $corrected_source ) ) {
-            return $corrected_source;
-        }
-        
-        // Otherwise, find the first directory and rename it
-        $source_files = $wp_filesystem->dirlist( $remote_source );
-        
-        if ( ! $source_files ) {
-            return $source;
-        }
-        
-        foreach ( $source_files as $file_name => $file_details ) {
-            if ( $file_details['type'] === 'd' ) {
-                $old_source = trailingslashit( $remote_source ) . $file_name;
-                
-                // Rename to the expected directory name
-                if ( $wp_filesystem->move( $old_source, $corrected_source ) ) {
-                    return $corrected_source;
-                }
-                
-                break;
-            }
-        }
-        
-        return $source;
     }
     
     /**
