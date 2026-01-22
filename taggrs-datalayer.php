@@ -30,6 +30,9 @@ require_once plugin_dir_path(__FILE__) . 'includes/inject_gtm.php';
 // load functions
 require_once plugin_dir_path(__FILE__) . 'includes/functions.php';
 
+// load updater
+require_once plugin_dir_path(__FILE__) . 'includes/updater.php';
+
 // load events
 require_once plugin_dir_path(__FILE__) . 'includes/events/view_item.php';
 require_once plugin_dir_path(__FILE__) . 'includes/events/add_to_cart.php';
