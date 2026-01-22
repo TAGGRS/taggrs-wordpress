@@ -35,6 +35,8 @@ class TAGGRS_Plugin_Updater {
         // Hook into WordPress update system
         add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_update' ) );
         add_filter( 'plugins_api', array( $this, 'plugin_info' ), 10, 3 );
+        add_filter( 'upgrader_pre_install', array( $this, 'before_install' ), 10, 2 );
+        add_filter( 'upgrader_source_selection', array( $this, 'fix_source_directory' ), 10, 4 );
         add_filter( 'upgrader_post_install', array( $this, 'post_install' ), 10, 3 );
         
         // Add settings link to plugin page
@@ -237,6 +239,47 @@ class TAGGRS_Plugin_Updater {
         $changelog = wpautop( $body );
         
         return $changelog;
+    }
+    
+    /**
+     * Before install hook - save plugin status before WordPress deactivates it
+     */
+    public function before_install( $true, $hook_extra ) {
+        // Check if this is our plugin being updated
+        if ( isset( $hook_extra['plugin'] ) && $hook_extra['plugin'] === $this->plugin_basename ) {
+            // Save active status BEFORE WordPress deactivates it
+            if ( is_plugin_active( $this->plugin_basename ) ) {
+                set_transient( 'taggrs_was_active', true, 300 );
+            }
+        }
+        return $true;
+    }
+    
+    /**
+     * Fix GitHub's automatic directory naming (TAGGRS-taggrs-wordpress-abc123 -> taggrs-wordpress)
+     */
+    public function fix_source_directory( $source, $remote_source, $upgrader, $hook_extra = null ) {
+        global $wp_filesystem;
+        
+        // Only fix for our plugin
+        if ( ! isset( $hook_extra['plugin'] ) || $hook_extra['plugin'] !== $this->plugin_basename ) {
+            return $source;
+        }
+        
+        // The correct directory name
+        $corrected_source = trailingslashit( $remote_source ) . 'taggrs-wordpress/';
+        
+        // If already correct, return it
+        if ( $source === $corrected_source ) {
+            return $source;
+        }
+        
+        // Rename the GitHub directory to the correct name
+        if ( $wp_filesystem->move( $source, $corrected_source ) ) {
+            return $corrected_source;
+        }
+        
+        return $source;
     }
     
     /**
