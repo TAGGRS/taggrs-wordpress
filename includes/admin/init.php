@@ -172,19 +172,7 @@ function tggr_options_page_html() {
                          </div>
                      </div>
                  </div>
-                 
-                 <!-- Updates Section -->
-                 <div class="postbox" style="margin-top: 20px;">
-                     <div class="inside">
-                         <h2 style="margin: 0 0 15px 0; padding: 0; font-size: 18px;">Plugin updates</h2>
-                         <form action="options.php" method="post" id="taggrs-updates-form">
-                             <?php
-                             settings_fields('tggr');
-                             do_settings_sections('wc-gtm-settings-updates');
-                             ?>
-                         </form>
-                     </div>
-                 </div>
+
             </div>
         </div>
     </div>
@@ -278,105 +266,6 @@ function tggr_success_message($old_value, $value, $option) {
 add_action('update_option_tggr_code', 'tggr_success_message', 10, 3);
 add_action('update_option_tggr_url', 'tggr_success_message', 10, 3);
 add_action('update_option_tggr_options', 'tggr_success_message', 10, 3);
-add_action('update_option_taggrs_auto_update', 'tggr_success_message', 10, 3);
-
-function tggr_section_updates_cb($args) {
-    // Handle manual update check
-    if ( isset( $_GET['taggrs_refresh_update'] ) && current_user_can( 'update_plugins' ) ) {
-        delete_transient( 'taggrs_github_release' );
-        error_log( 'TAGGRS: Update cache cleared by user' );
-    }
-    
-    $auto_update = get_option('taggrs_auto_update', false);
-    $checked = checked($auto_update, 1, false);
-    
-    echo '<label style="display: block; margin-bottom: 15px;">';
-    echo '<input name="taggrs_auto_update" id="taggrs_auto_update" type="checkbox" value="1" ' . esc_attr($checked) . ' onchange="this.form.submit();">';
-    echo ' <strong>Enable automatic updates</strong>';
-    echo '</label>';
-    echo '<p class="description" style="margin-left: 0;">When enabled, the plugin will automatically update to the latest version when a new release is available.</p>';
-    
-    // Display current version and latest version
-    if ( ! function_exists( 'get_plugin_data' ) ) {
-        require_once ABSPATH . 'wp-admin/includes/plugin.php';
-    }
-    $plugin_data = get_plugin_data( dirname( dirname( dirname( __FILE__ ) ) ) . '/taggrs-datalayer.php' );
-    $current_version = $plugin_data['Version'];
-    
-    echo '<div style="background: #f0f0f1; padding: 15px; margin-top: 15px; border-radius: 4px;">';
-    echo '<p><strong>Current version:</strong> ' . esc_html($current_version) . '</p>';
-    
-    // Show success message if update was just checked
-    if ( isset( $_GET['taggrs_refresh_update'] ) ) {
-        echo '<div class="notice notice-success inline" style="margin: 10px 0; padding: 8px 12px;"><p>✓ Update check completed!</p></div>';
-    }
-    
-    // Check for latest version
-    $release = tggr_get_latest_github_release();
-    if ($release) {
-        $latest_version = ltrim($release->tag_name, 'v');
-        echo '<p><strong>Latest version:</strong> ' . esc_html($latest_version) . '</p>';
-        
-        if (version_compare($current_version, $latest_version, '<')) {
-            echo '<p style="color: #d63638; font-weight: bold;">⚠️ A new version is available!</p>';
-            echo '<p style="margin-top: 10px;">';
-            echo '<a href="' . esc_url(admin_url('plugins.php')) . '" class="button button-primary" style="margin-right: 10px;">Go to Plugins page to update</a>';
-            echo '<a href="' . esc_url(add_query_arg('taggrs_refresh_update', '1')) . '" class="button">Check for updates again</a>';
-            echo '</p>';
-        } else {
-            echo '<p style="color: #00a32a; font-weight: bold;">✓ You are running the latest version</p>';
-            echo '<p style="margin-top: 10px;">';
-            echo '<a href="' . esc_url(add_query_arg('taggrs_refresh_update', '1')) . '" class="button">Check for updates</a>';
-            echo '</p>';
-        }
-        
-        // Show release notes if available
-        if (!empty($release->body)) {
-            echo '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">';
-            echo '<p><strong>Latest release notes:</strong></p>';
-            echo '<div style="max-height: 200px; overflow-y: auto; padding: 10px; background: white; border: 1px solid #ddd; border-radius: 3px;">';
-            echo wp_kses_post(wpautop($release->body));
-            echo '</div>';
-            echo '</div>';
-        }
-    } else {
-        echo '<p style="color: #d63638;">❌ Could not fetch update information from GitHub</p>';
-        echo '<p class="description">Please check your internet connection or try again later.</p>';
-        echo '<p style="margin-top: 10px;">';
-        echo '<a href="' . esc_url(add_query_arg('taggrs_refresh_update', '1')) . '" class="button">Try checking again</a>';
-        echo '</p>';
-    }
-    echo '</div>';
-}
-
-function tggr_get_latest_github_release() {
-    $api_url = 'https://api.github.com/repos/TAGGRS/taggrs-wordpress/releases/latest';
-    
-    error_log( 'TAGGRS: Fetching updates from GitHub API' );
-    
-    $response = wp_remote_get( $api_url, array(
-        'timeout' => 10,
-        'headers' => array(
-            'Accept' => 'application/vnd.github.v3+json',
-        ),
-    ) );
-    
-    if ( is_wp_error( $response ) ) {
-        error_log( 'TAGGRS: GitHub API error - ' . $response->get_error_message() );
-        return false;
-    }
-    
-    $body = wp_remote_retrieve_body( $response );
-    $data = json_decode( $body );
-    
-    if ( empty($data) ) {
-        error_log( 'TAGGRS: GitHub API returned empty data' );
-    } else {
-        error_log( 'TAGGRS: Successfully fetched version ' . ( isset($data->tag_name) ? $data->tag_name : 'unknown' ) );
-    }
-    
-    return !empty($data) ? $data : false;
-}
 
 function tggr_section_gtm_cb($args) {
     echo esc_html('Enter your Google Tag Manager settings below:');
@@ -478,17 +367,6 @@ function tggr_settings_init() {
 
     // Register a new setting for our options page for the events.
     register_setting('tggr', 'tggr_options', array('sanitize_callback' => 'tggr_options_sanitize'));
-
-    // Register auto-update setting
-    register_setting('tggr', 'taggrs_auto_update', array('sanitize_callback' => 'tggr_auto_update_sanitize'));
-
-    // Add section for auto-updates
-    add_settings_section(
-        'tggr_section_updates',
-        '',
-        'tggr_section_updates_cb',
-        'wc-gtm-settings-updates'
-    );
 
     // Add a new section to our options page for the events.
     add_settings_section(

@@ -27,20 +27,22 @@ class TAGGRS_Plugin_Updater {
         $this->plugin_basename = plugin_basename( dirname( dirname( __FILE__ ) ) . '/taggrs-datalayer.php' );
         $this->github_repo = 'TAGGRS/taggrs-wordpress';
         
+        // Debug: log the basename
+        error_log( 'TAGGRS Updater: Plugin basename = ' . $this->plugin_basename );
+        
         // Get plugin data
         if ( ! function_exists( 'get_plugin_data' ) ) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
         $this->plugin_data = get_plugin_data( dirname( dirname( __FILE__ ) ) . '/taggrs-datalayer.php' );
         
+        error_log( 'TAGGRS Updater: Current version = ' . $this->plugin_data['Version'] );
+        
         // Hook into WordPress
         add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_update' ) );
         add_filter( 'plugins_api', array( $this, 'plugin_info' ), 10, 3 );
         add_filter( 'upgrader_post_install', array( $this, 'post_install' ), 10, 3 );
         add_filter( 'upgrader_source_selection', array( $this, 'fix_source_selection' ), 10, 4 );
-        
-        // Auto-updates support (WordPress 5.5+)
-        add_filter( 'auto_update_plugin', array( $this, 'auto_update_filter' ), 10, 2 );
         
         // Add settings link to plugin page
         add_filter( 'plugin_action_links_' . $this->plugin_basename, array( $this, 'add_action_links' ) );
@@ -219,7 +221,11 @@ class TAGGRS_Plugin_Updater {
      * Check for updates
      */
     public function check_update( $transient ) {
+        error_log( 'TAGGRS: check_update called!' );
+        error_log( 'TAGGRS: transient checked = ' . print_r( $transient->checked ?? 'empty', true ) );
+        
         if ( empty( $transient->checked ) ) {
+            error_log( 'TAGGRS: Transient checked is empty, returning early' );
             return $transient;
         }
         
@@ -233,6 +239,9 @@ class TAGGRS_Plugin_Updater {
         // Get version from tag name (remove 'v' prefix if present)
         $latest_version = ltrim( $release->tag_name, 'v' );
         $current_version = $this->plugin_data['Version'];
+        
+        error_log( 'TAGGRS: Checking updates - Current: ' . $current_version . ', Latest: ' . $latest_version );
+        error_log( 'TAGGRS: Plugin basename: ' . $this->plugin_basename );
         
         // Compare versions
         if ( version_compare( $current_version, $latest_version, '<' ) ) {
@@ -252,16 +261,28 @@ class TAGGRS_Plugin_Updater {
                 $download_url = $release->zipball_url;
             }
             
-            $plugin_data = array(
-                'slug' => $this->plugin_slug,
-                'plugin' => $this->plugin_basename,
-                'new_version' => $latest_version,
-                'url' => 'https://github.com/' . $this->github_repo,
-                'package' => $download_url,
-                'tested' => '6.8',
-            );
+            error_log( 'TAGGRS: Download URL: ' . $download_url );
             
-            $transient->response[ $this->plugin_basename ] = (object) $plugin_data;
+            // WordPress expects specific object structure
+            $update = new \stdClass();
+            $update->id = 'taggrs-wordpress/' . $this->plugin_basename;
+            $update->slug = $this->plugin_slug;
+            $update->plugin = $this->plugin_basename;
+            $update->new_version = $latest_version;
+            $update->url = 'https://github.com/' . $this->github_repo;
+            $update->package = $download_url;
+            $update->icons = array();
+            $update->banners = array();
+            $update->banners_rtl = array();
+            $update->tested = '6.8';
+            $update->requires_php = '7.2';
+            $update->compatibility = new \stdClass();
+            
+            $transient->response[ $this->plugin_basename ] = $update;
+            
+            error_log( 'TAGGRS: Update added to transient' );
+        } else {
+            error_log( 'TAGGRS: No update needed' );
         }
         
         return $transient;
@@ -384,24 +405,6 @@ class TAGGRS_Plugin_Updater {
         delete_transient( 'taggrs_github_release' );
         
         return $response;
-    }
-    
-    /**
-     * Filter for auto-updates
-     */
-    public function auto_update_filter( $update, $item ) {
-        if ( ! isset( $item->plugin ) || $item->plugin !== $this->plugin_basename ) {
-            return $update;
-        }
-        
-        // Check if auto-update is enabled in settings
-        $auto_update_enabled = get_option( 'taggrs_auto_update', false );
-        
-        if ( $auto_update_enabled ) {
-            return true;
-        }
-        
-        return $update;
     }
 }
 
