@@ -4,7 +4,7 @@
 
  - Requires at least: WordPress 4.5
  - Tested up to: WordPress 6.8
- - Stable tag: 1.1.9
+ - Stable tag: 1.1.10
  - Requires PHP: 7.2
  - License: GPLv2 or later
  - License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,6 +18,7 @@ Features:
 - Better privacy compliance.
 - Enhanced Conversions.
 - In-depth insights into customer journey and sales metrics via GA4.
+- Supports automatic updates.
 
 == Installation ==
 
