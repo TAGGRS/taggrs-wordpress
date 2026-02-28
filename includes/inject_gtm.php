@@ -38,7 +38,7 @@ function tggr_inject_gtm_script()
     //        $id = 'd6c41dc2-69f5-49d4-a510-cbe5cadad499';  // Fetch the ID from wherever you have it.
     //        $bearer_token = '1|hUgtpWxPz17M0WC023NlLZhmM5EMGnaTKFsw70nr';  // Again, fetch this securely.
     //        $data = fetch_container_data($id, $bearer_token);
-    echo "<!-- Server Side Tagging by TAGGRS -->
+    echo "<!-- Server Side Tagging by TAGGRS v" . TGGR_VERSION . " -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -92,7 +92,7 @@ function tggr_inject_gtm_noscript()
     //        $id = 'd6c41dc2-69f5-49d4-a510-cbe5cadad499';  // Fetch the ID from wherever you have it.
     //        $bearer_token = '1|hUgtpWxPz17M0WC023NlLZhmM5EMGnaTKFsw70nr';  // Again, fetch this securely.
     //        $data = fetch_container_data($id, $bearer_token);
-    echo  "<!-- Server Side Tagging by TAGGRS (noscript) -->
+    echo  "<!-- Server Side Tagging by TAGGRS v" . TGGR_VERSION . " (noscript) -->
     <noscript><iframe src='" . esc_js($gtm_url) . "?" . esc_js($parameter) . "=" . esc_js($gtm_code) . "'
                       height='0' width='0' style='display:none;visibility:hidden'></iframe></noscript>
     <!-- End Server Side Tagging by TAGGRS (noscript) -->";
