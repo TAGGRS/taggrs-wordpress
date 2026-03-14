@@ -66,25 +66,31 @@ function tggr_print_remove_from_cart_script()
     
     $inline_script = '
         jQuery(document).ready(function($) {
+            var tggrRemoveFromCartPushed = false;
+
             function tggrPushRemoveFromCartData() {
+                if (tggrRemoveFromCartPushed) {
+                    return;
+                }
                 var cookieValue = document.cookie.split("; ").find(row => row.startsWith("tggr_remove_from_cart_data="));
                 if (cookieValue) {
+                    tggrRemoveFromCartPushed = true;
+                    // Delete cookie before pushing to prevent duplicate pushes
+                    document.cookie = "tggr_remove_from_cart_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=" + tggr_remove_from_cart.cookiePath + "; domain=" + tggr_remove_from_cart.cookieDomain;
                     try {
                         var data = JSON.parse(atob(decodeURIComponent(cookieValue.split("=")[1])));
                         window.dataLayer = window.dataLayer || [];
+                        window.dataLayer.push({ecommerce: null});
                         window.dataLayer.push(data);
-                        
-                        // Delete cookie after pushing data
-                        document.cookie = "tggr_remove_from_cart_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=" + tggr_remove_from_cart.cookiePath + "; domain=" + tggr_remove_from_cart.cookieDomain;
                     } catch(e) {
                         console.error("Remove from cart data error:", e);
                     }
                 }
             }
-            
+
             // Check on load (for non-AJAX calls)
             tggrPushRemoveFromCartData();
-            
+
             // Check after AJAX remove from cart events
             $(document.body).on("removed_from_cart updated_wc_div wc_fragments_refreshed", function() {
                 setTimeout(tggrPushRemoveFromCartData, 500);
