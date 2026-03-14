@@ -111,6 +111,13 @@ function tggr_options_page_html() {
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+
+        .tggr-logo-header {
+            display: flex;
+            align-items: flex-end;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
     </style>
     <div class="wrap">
         <?php 
@@ -120,16 +127,23 @@ function tggr_options_page_html() {
         // phpcs:disable PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
         echo wp_kses(
             sprintf(
-                '<img src="%s" alt="%s" style="width: 250px; height: auto; margin-top: 25px; margin-bottom: 25px;" />',
+                '<div class="tggr-logo-header"><img src="%s" alt="%s" style="width: 250px; height: auto;"><p style="margin: 0 0 0 8px; font-style: italic; line-height: 1;">v%s</p></div>',
                 esc_url($image_url),
-                esc_attr__('TAGGRS Logo', 'taggrs-datalayer')
+                esc_attr__('TAGGRS Logo', 'taggrs-datalayer'),
+                esc_html( TGGR_VERSION )
             ),
             array(
+                'div' => array(
+                    'class' => array(),
+                ),
                 'img' => array(
                     'src' => array(),
                     'alt' => array(),
                     'style' => array(),
-                )
+                ),
+                'p' => array(
+                    'style' => array(),
+                ),
             )
         );
         // phpcs:enable PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
