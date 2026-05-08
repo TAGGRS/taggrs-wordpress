@@ -1,5 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined('ABSPATH')) exit;
 
 function tggr_gtm_view_item_list()
 {
@@ -17,7 +17,8 @@ function tggr_gtm_view_item_list()
             global $wp_query;
             $products = [];
             foreach ($wp_query->posts as $post) {
-                $product = wc_get_product($post->ID);
+                $post_id = is_object($post) ? $post->ID : $post;
+                $product = wc_get_product($post_id);
                 if ($product) {
                     $products[] = tggr_format_item($product->get_id());
                 }
