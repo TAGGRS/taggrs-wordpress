@@ -1,81 +1,42 @@
-// Sample JavaScript code, make sure to adapt it based on your needs
-jQuery(document).ready(function($) {
-    $('.nav-tab').click(function(e) {
-        e.preventDefault();
-        $('.nav-tab').removeClass('nav-tab-active');
-        $(this).addClass('nav-tab-active');
-        var tab = $(this).attr('href').split('&tab=')[1];
-        if(tab == 'gtm') {
-            // Show GTM settings and hide events
-        } else if(tab == 'events') {
-            // Show events and hide GTM settings
-        }
-    });
-});
+jQuery( document ).ready( function ( $ ) {
+	$( '.nav-tab' ).click( function ( e ) {
+		e.preventDefault();
+		$( '.nav-tab' ).removeClass( 'nav-tab-active' );
+		$( this ).addClass( 'nav-tab-active' );
+		let tab = $( this ).attr( 'href' ).split( '&tab=' )[ 1 ];
 
+		if ( tab == 'gtm' ) {
+			// Show GTM settings and hide events
+		} else if ( tab == 'events' ) {
+			// Show events and hide GTM settings
+		}
+	} );
+} );
 
 document.addEventListener( 'DOMContentLoaded', function () {
 	const urlToggleField = document.getElementById( 'tggr_url_toggle' );
-	const enhancedTrackingCheckbox = document.getElementById( 'tggr_enhanced_tracking_v2' );
-	const containerIdField = document.getElementById( 'enhanced_tracking_v2_container_id' );
-	const enhancedTrackingSection = document.getElementById( 'enhanced_tracking_v2_section' );
-	const submitButton = document.querySelector( '#taggrs-options-form input[type="submit"], #taggrs-options-form button[type="submit"]' ); // Specifieke selectie van de submitknop binnen het formulier
+	const containerIdField = document.getElementById(
+		'enhanced_tracking_container_id',
+	);
+	const enhancedTrackingSection = document.getElementById(
+		'enhanced_tracking_section',
+	);
 
-	// Foutmelding element aanmaken
-	let errorMessage = document.createElement( 'p' );
-
-	errorMessage.style.color = 'red';
-	errorMessage.style.fontSize = '12px';
-	errorMessage.style.marginTop = '5px';
-	errorMessage.textContent = 'To enable Enhanced Tracking v2, it is required to supply a TAGGRS Container Identifier.';
-	errorMessage.style.display = 'none';
-	containerIdField.insertAdjacentElement( 'afterend', errorMessage );
+	if ( !urlToggleField || !containerIdField || !enhancedTrackingSection ) {
+		return;
+	}
 
 	function toggleEnhancedTrackingSection () {
-		const urlToggleValue = urlToggleField.value;
-		const isEnabled = urlToggleValue !== '';
+		const isEnabled = urlToggleField.value.trim() !== '';
 
-		enhancedTrackingCheckbox.disabled = !isEnabled;
 		containerIdField.disabled = !isEnabled;
 		enhancedTrackingSection.style.opacity = isEnabled ? '1' : '0.7';
 
 		if ( !isEnabled ) {
-			enhancedTrackingCheckbox.checked = false;
-			containerIdField.value = '';
-			errorMessage.style.display = 'none';
-		}
-
-		validateForm();
-	}
-
-	function validateForm () {
-		// Disable/enable container ID field based on checkbox state and overall enhanced tracking availability
-		const urlToggleValue = urlToggleField.value;
-		const isUrlToggleEnabled = urlToggleValue !== '';
-
-		// Container ID field should be disabled if:
-		// 1. Enhanced tracking checkbox is not checked, OR
-		// 2. Enhanced tracking section is disabled (no subdomain)
-		containerIdField.disabled = !enhancedTrackingCheckbox.checked || !isUrlToggleEnabled;
-
-		// Clear container ID field when checkbox is unchecked
-		if (!enhancedTrackingCheckbox.checked) {
 			containerIdField.value = '';
 		}
-		
-		if ( enhancedTrackingCheckbox.checked && containerIdField.value.trim() === '' ) {
-			errorMessage.style.display = 'block';
-			submitButton.disabled = true;
-		} else {
-			errorMessage.style.display = 'none';
-			submitButton.disabled = false;
-		}
 	}
 
-	if ( urlToggleField && enhancedTrackingCheckbox && containerIdField && enhancedTrackingSection && submitButton ) {
-		toggleEnhancedTrackingSection();
-		urlToggleField.addEventListener( 'input', toggleEnhancedTrackingSection );
-		enhancedTrackingCheckbox.addEventListener( 'change', validateForm );
-		containerIdField.addEventListener( 'input', validateForm );
-	}
+	toggleEnhancedTrackingSection();
+	urlToggleField.addEventListener( 'input', toggleEnhancedTrackingSection );
 } );
