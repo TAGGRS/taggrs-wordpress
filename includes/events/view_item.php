@@ -28,7 +28,7 @@ function tggr_gtm_view_item()
                         'event': 'view_item',
                         'ecommerce': {
                             'currency': '<?php echo esc_js(get_woocommerce_currency()); ?>',
-                            'value': '<?php echo esc_js($product->get_price()); ?>',
+                            'value': <?php echo floatval($product->get_price()); ?>,
                             'items': [<?php echo wp_json_encode($item); ?>],
                             'user_data': {
                                 'email': '<?php echo esc_js($current_user->user_email); ?>',
