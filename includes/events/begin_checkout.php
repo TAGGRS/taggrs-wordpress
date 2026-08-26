@@ -65,6 +65,11 @@ add_action('wp_footer', 'tggr_print_checkout_script');
 
 // Blocks checkout: enqueue tracking script
 function tggr_enqueue_blocks_checkout_script() {
+    // Check if WooCommerce has loaded
+    if ( !function_exists( 'is_checkout' ) ) {
+        return;
+    }
+
     // Only run on checkout page
     if (!is_checkout() && !has_block('woocommerce/checkout')) {
         return;
