@@ -1,5 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (! defined('ABSPATH')) exit;
 
 function tggr_gtm_purchase($order_id)
 {
@@ -12,7 +12,14 @@ function tggr_gtm_purchase($order_id)
 
         foreach ($items as $item) {
             $product = $item->get_product();
-            $products[] = tggr_format_item($product->get_id(), $item->get_quantity());
+            if (!$product) {
+                continue;
+            }
+
+            $quantity = max(1, (int) $item->get_quantity());
+            $product_item = tggr_format_item($product->get_id(), $quantity);
+            $product_item['price'] = (float) $item->get_total() / $quantity;
+            $products[] = $product_item;
         }
 
         $hashed_email = tggr_hash_email($order->get_billing_email());
